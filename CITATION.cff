@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it as below."
+title: "One Shot, Twenty-One Balls: Existence and Rarity of a Total Clearance in a Single Stroke of Snooker"
+abstract: >-
+  Snooker folklore holds that no single stroke can pocket all twenty-one
+  object balls. In a fully specified model of billiard dynamics we exhibit
+  an explicit configuration and cue stroke that pockets all twenty-one,
+  prove the set of successful strokes has positive Lebesgue measure,
+  conjecture the same for the regulation opening break, and estimate by
+  Monte Carlo the exponentially small probability of a total clearance.
+  The folk claim is right in practice and wrong in principle; the gap is
+  the distance between measure zero and unobservably small.
+type: software
+authors:
+  - family-names: Kantor
+    given-names: Avner
+    affiliation: "Israel Central Bureau of Statistics"
+year: 2026
+license: MIT
+keywords:
+  - billiards
+  - snooker
+  - dynamical systems
+  - computer-assisted proof
+  - Monte Carlo
+  - rare events
+# When available, add:
+#   doi: 10.5281/zenodo.XXXXXXX
+repository-code: "https://github.com/avnerkantor/one-shot-twenty-one-balls"

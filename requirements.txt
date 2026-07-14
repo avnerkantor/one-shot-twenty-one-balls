@@ -1,0 +1,3 @@
+# Core engine, witness constructor, verifier, and Monte Carlo use only the
+# Python standard library. matplotlib is required solely for make_figures.py.
+matplotlib>=3.5

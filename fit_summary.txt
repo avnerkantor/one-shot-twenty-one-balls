@@ -1,0 +1,5 @@
+n = 30000
+log-linear fit over k = 1..6 (points with count >= 5):
+log10 P(k) = 0.077 + -0.569 k
+extrapolated P(21) ~ 1.35e-12
+NOTE: extrapolation is heuristic and conditional on Conjecture 1; report it as such.
