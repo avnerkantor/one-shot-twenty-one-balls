@@ -11,15 +11,15 @@ principle*. The gap between those two is exactly the distance between
 about.
 
 <p align="center">
-  <img src="witness_layout.png" width="720"
-       alt="A verified 21-ball single-stroke clearance; the cue path is red.">
+  <img src="witness_clearance.gif" width="720"
+       alt="A single cue stroke pocketing all 21 object balls, animated.">
 </p>
 
-The picture above is not a mock-up. It is a real configuration of 21
-object balls and a single cue stroke that, when replayed in the model's
-own physics engine, pockets **all 21** in one continuous shot. You can
-reproduce and re-verify it from this repo in a few seconds
-(`python3 witness_verify.py`).
+The animation above is not a mock-up. A single cue stroke pockets **all
+21** object balls in one continuous run of the model's own physics
+engine. You can reproduce and re-verify it from this repo in a few
+seconds (`python3 witness_verify.py`), and regenerate the animation with
+`python3 make_gif.py`.
 
 ## The three claims
 
@@ -90,13 +90,15 @@ over the table.
 ├── witness_verify.py   # standalone verifier for a witness JSON
 ├── mc_break.py         # Monte Carlo P(k) + parameter sensitivity grid
 ├── make_figures.py     # regenerates both figures
+├── make_gif.py         # renders the animated clearance (witness_clearance.gif)
 │
 ├── witness_21.json     # the verified 21-ball clearance (cue shot + coords)
 ├── mc_results.json     # 30,000-stroke P(k) distribution
 ├── mc_sensitivity.json # 9-cell friction × restitution grid
 ├── bv_robust.json      # a robustness-optimized short chain (fat success set)
 │
-├── witness_layout.pdf/png   # the witness figure
+├── witness_layout.pdf/png   # the witness figure (static)
+├── witness_clearance.gif    # the witness, animated
 ├── pk_decay.pdf/png         # the P(k) decay figure
 │
 ├── paper/              # the LaTeX manuscript and generated tables
