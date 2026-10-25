@@ -4,44 +4,53 @@ make_figures.py -- regenerate the two figures used in the paper.
   pk_decay.pdf/png       : estimated P(k) with Wilson intervals + log-linear
                            fit + extrapolation to k=21  (from mc_results.json)
   witness_layout.pdf/png : the verified 21-ball clearance, cue path in red
-                           (from witness_21.json, replayed in model_sim)
+                           (from proof/witness_21.json, replayed in the
+                           80-digit exact engine model_sim_mp)
 
-Run:  python3 make_figures.py
-Dependencies: matplotlib, and model_sim.py in the same directory.
+Run:  python figures/make_figures.py   (writes into figures/)
+Dependencies: matplotlib, mpmath.
 """
 import json
 import math
 import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+sys.path.insert(0, os.path.join(ROOT, "model"))
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Rectangle
 
-import model_sim as M
+import model_sim_mp as M
 
 
-def fig_witness(src="witness_21.json", out="witness_layout.pdf"):
+def fig_witness(src=os.path.join(ROOT, "proof", "witness_21.json"),
+                out=os.path.join(HERE, "witness_layout.pdf")):
     if not os.path.exists(src):
         print(f"skip {out}: {src} not found")
         return
     w = json.load(open(src))
     fig, ax = plt.subplots(figsize=(9, 4.7))
-    ax.add_patch(Rectangle((0, 0), M.L, M.W, fill=False, lw=1.5))
-    for (cx, cy), nm in zip(M.POCKETS, M.POCKET_NAMES):
-        ax.add_patch(Circle((cx, cy), M.RHO, fc="0.85", ec="0.5",
+    L, W, R, RHO = (float(v) for v in (M.L, M.W, M.R, M.RHO))
+    pockets = [(float(x), float(y)) for x, y in M.POCKETS]
+    ax.add_patch(Rectangle((0, 0), L, W, fill=False, lw=1.5))
+    for (cx, cy), nm in zip(pockets, M.POCKET_NAMES):
+        ax.add_patch(Circle((cx, cy), RHO, fc="0.85", ec="0.5",
                             lw=0.8, zorder=0))
 
-    ax.add_patch(Circle(w["cue"], M.R, fc="white", ec="black", lw=1.3,
+    ax.add_patch(Circle(w["cue"], R, fc="white", ec="black", lw=1.3,
                         zorder=3))
     ax.annotate("cue", w["cue"], textcoords="offset points",
                 xytext=(-4, 6), fontsize=7)
 
     for i, (p, g) in enumerate(zip(w["balls"], w["pockets"])):
-        ax.add_patch(Circle(p, M.R, fc="0.4", ec="black", zorder=3))
+        ax.add_patch(Circle(p, R, fc="0.4", ec="black", zorder=3))
         ax.annotate(str(i + 1), p, textcoords="offset points",
                     xytext=(3, 4), fontsize=6)
-        gx, gy = M.POCKETS[g]
+        gx, gy = pockets[g]
         ax.plot([p[0], gx], [p[1], gy], lw=0.5, ls=":",
                 color="0.55", zorder=1)
 
@@ -51,21 +60,21 @@ def fig_witness(src="witness_21.json", out="witness_layout.pdf"):
     M.shoot(balls[0], w["v0"], w["phi"])
     sim = M.Simulator(balls, record_events=True)
     cue = balls[0]
-    path = [(cue.x, cue.y)]
+    path = [(float(cue.x), float(cue.y))]
     for _ in range(9000):
         if not sim.step():
             break
-        path.append((cue.x, cue.y))
+        path.append((float(cue.x), float(cue.y)))
         if not cue.active:
             break
     ax.plot([p[0] for p in path], [p[1] for p in path],
             lw=0.8, color="C3", alpha=0.7, zorder=2)
 
-    ax.set_xlim(-0.1, M.L + 0.1)
-    ax.set_ylim(-0.1, M.W + 0.1)
+    ax.set_xlim(-0.1, L + 0.1)
+    ax.set_ylim(-0.1, W + 0.1)
     ax.set_aspect("equal")
     ax.axis("off")
-    ax.set_title("Verified 21-ball single-stroke clearance "
+    ax.set_title("Certified 21-ball single-stroke clearance "
                  "(cue path in red)", fontsize=9)
     fig.tight_layout()
     fig.savefig(out, bbox_inches="tight")
@@ -83,7 +92,8 @@ def wilson(k, n, z=1.96):
     return (max(ctr - hw, 1e-12), min(ctr + hw, 1.0))
 
 
-def fig_pk(src="mc_results.json", out="pk_decay.pdf"):
+def fig_pk(src=os.path.join(ROOT, "simulation", "mc_results.json"),
+           out=os.path.join(HERE, "pk_decay.pdf")):
     if not os.path.exists(src):
         print(f"skip {out}: {src} not found")
         return

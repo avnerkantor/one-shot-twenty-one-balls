@@ -1,11 +1,7 @@
+# Private: paper sources and journal submission (local only)
+submission/
+
 # LaTeX build artifacts
-paper/*.aux
-paper/*.log
-paper/*.out
-paper/*.toc
-paper/*.fls
-paper/*.fdb_latexmk
-paper/*.synctex.gz
 *.aux
 *.log
 *.out

@@ -1,17 +1,23 @@
 """
 make_gif.py -- animate the verified 21-ball single-stroke clearance.
 
-Replays witness_21.json in the event-driven engine, sampling every ball's
+Replays proof/witness_21.json in the 80-digit exact engine (model_sim_mp;
+a double-precision replay would not follow the true trajectory), sampling every ball's
 position at a fixed frame rate, and renders an animated GIF: the cue
 traces its path in red, each ball vanishes as it is pocketed, and a
 counter tracks the running total.
 
-Run:  python3 make_gif.py [witness_21.json] [out.gif]
-Deps: matplotlib, imageio, model_sim.py
+Run:  python figures/make_gif.py [witness.json] [out.gif]
+Deps: matplotlib, imageio, mpmath
 """
 import json
 import math
+import os
 import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+sys.path.insert(0, os.path.join(ROOT, "model"))
 
 import matplotlib
 matplotlib.use("Agg")
@@ -19,10 +25,11 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Rectangle
 import imageio.v2 as imageio
 
-import model_sim as M
+import model_sim_mp as M
 
-R, L, W, RHO, A = M.R, M.L, M.W, M.RHO, M.A
+R, L, W, RHO, A = (float(v) for v in (M.R, M.L, M.W, M.RHO, M.A))
 V_MIN = M.V_MIN
+POCKETS = [(float(x), float(y)) for x, y in M.POCKETS]
 
 FPS = 30
 DT = 1.0 / FPS
@@ -82,14 +89,14 @@ def _snapshot(balls, tau):
             continue
         s = b._s
         if s < V_MIN or tau <= 0:
-            out[b.name] = (b.x, b.y)
+            out[b.name] = (float(b.x), float(b.y))
             continue
         ux, uy = b.vx / s, b.vy / s
         t_stop = s / A
         t = min(tau, t_stop)
         x = b.x + b.vx * t - 0.5 * A * t * t * ux
         y = b.y + b.vy * t - 0.5 * A * t * t * uy
-        out[b.name] = (x, y)
+        out[b.name] = (float(x), float(y))
     return out, n_potted
 
 
@@ -110,7 +117,7 @@ def _fig_to_rgb(fig):
 def _new_axes():
     fig, ax = plt.subplots(figsize=(9, 4.7), dpi=80)
     ax.add_patch(Rectangle((0, 0), L, W, fill=False, lw=1.5))
-    for (cx, cy), nm in zip(M.POCKETS, M.POCKET_NAMES):
+    for (cx, cy), nm in zip(POCKETS, M.POCKET_NAMES):
         ax.add_patch(Circle((cx, cy), RHO, fc="0.85", ec="0.5",
                             lw=0.8, zorder=0))
     ax.set_title("One stroke, twenty-one balls", fontsize=11)
@@ -133,7 +140,7 @@ def _draw_setup(ax, w, snap):
         ax.add_patch(Circle(p, R, fc="0.4", ec="black", zorder=3))
         ax.annotate(str(i + 1), p, textcoords="offset points",
                     xytext=(3, 4), fontsize=6)
-        gx, gy = M.POCKETS[pockets[i]]
+        gx, gy = POCKETS[pockets[i]]
         ax.plot([p[0], gx], [p[1], gy], lw=0.4, ls=":",
                 color="0.7", zorder=1)
 
@@ -225,8 +232,8 @@ def render(w, frames, out):
 
 
 if __name__ == "__main__":
-    src = sys.argv[1] if len(sys.argv) > 1 else "witness_21.json"
-    out = sys.argv[2] if len(sys.argv) > 2 else "witness_clearance.gif"
+    src = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "proof", "witness_21.json")
+    out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "witness_clearance.gif")
     w = json.load(open(src))
     frames = sample_run(w)
     print(f"sampled {len(frames)} frames from the run")

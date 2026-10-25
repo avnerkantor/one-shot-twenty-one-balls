@@ -1,117 +1,140 @@
 # One Shot, Twenty-One Balls
 
-**Existence and rarity of a total clearance in a single stroke of snooker.**
+**Can a single stroke of snooker clear all twenty-one object balls?**
 
-Snooker folklore holds that no single stroke can pocket all twenty-one
-object balls. This repository accompanies a short mathematics paper that
-takes the claim seriously inside a fully specified model of billiard
-dynamics, and finds that the folklore is *right in practice and wrong in
-principle*. The gap between those two is exactly the distance between
-**measure zero** and **unobservably small** — which is what the paper is
-about.
+Snooker folklore says no. This repository accompanies a short mathematics
+paper showing that, in a fully specified idealized model of billiard
+dynamics, the answer is *yes in principle* and *never in practice*. It
+contains a computer-assisted proof of the first half and the simulations
+behind the second.
 
 <p align="center">
-  <img src="witness_clearance.gif" width="720"
+  <img src="figures/witness_clearance.gif" width="720"
        alt="A single cue stroke pocketing all 21 object balls, animated.">
 </p>
 
-The animation above is not a mock-up. A single cue stroke pockets **all
-21** object balls in one continuous run of the model's own physics
-engine. You can reproduce and re-verify it from this repo in a few
-seconds (`python3 witness_verify.py`), and regenerate the animation with
-`python3 make_gif.py`.
+## What is proved
 
-## The three claims
+**Theorem (computer-assisted).** For the table layout in
+[`proof/witness_21.json`](proof/witness_21.json), every cue stroke with
 
-The folklore actually bundles three different statements:
+* speed `V0` within `1e-90` m/s of `V0*`, and
+* direction `phi` within `1e-90` rad of `phi*`
 
-1. **No legal stroke can *possibly* pot all twenty-one balls.**
-   *False.* We exhibit an explicit witness — a configuration and a
-   stroke that clears all 21 — and prove the set of successful strokes
-   has **positive Lebesgue measure** (it is an open set, not a lone
-   coincidence). So a total clearance is possible, and possible in a
-   mathematically robust way.
+pockets all 21 object balls in Model M. So the set of winning strokes
+contains a rectangle of area at least `4e-180`. It has positive measure,
+but it is unimaginably thin.
 
-2. **From the regulation opening break, no stroke pots all twenty-one.**
-   *Conjectured false, and open.* We explain why this sits in a
-   computational blind spot: it is decidable *in principle* by a single
-   certified simulation, yet hopeless to settle by brute-force sampling.
+The proof is a rigorous replay of the stroke in interval arithmetic,
+checked by two independent programs written against different
+interval libraries:
 
-3. **You will never see it happen.**
-   *True, overwhelmingly.* Monte Carlo experiments estimate the
-   probability `P(k)` that a uniformly random stroke pots exactly `k`
-   balls. The decay is cleanly exponential; extrapolated to `k = 21` it
-   lands around `10⁻¹²`, far beyond anything observable.
+| | library | file |
+|---|---|---|
+| certifier 1 | mpmath (`mpmath.iv`) | [`proof/certify_mpmath.py`](proof/certify_mpmath.py) |
+| certifier 2 | Arb (`python-flint`), written independently from the model spec | [`proof/certify_arb.py`](proof/certify_arb.py) |
 
-The twist in claim 1: the success set for our 21-ball witness, while
-genuinely open (hence positive measure), is *extraordinarily thin* — a
-change of order `10⁻⁶ m/s` in cue speed already spoils the clearance.
-Positive measure and observable robustness part company, and that parting
-is the paper's theme. (Shorter chains built by the same method have
-visibly fat success sets — a 3-ball clearance survives a `~0.1 m/s`
-window, five orders of magnitude wider.)
+At every one of the 61 events (21 collisions, 19 cushion rebounds, 21
+pocketings), each certifier proves three things for every stroke in the
+box:
+
+* the event happens at a unique, transversal instant inside an explicit
+  time enclosure;
+* nothing else (no other ball pair, cushion, pocket or stop) happens
+  first;
+* the state after the event is enclosed correctly.
+
+Saved outputs are in [`proof/certificates/`](proof/certificates/).
+
+> **Exact numbers.** All coordinates and shot parameters are the
+> binary64 (IEEE double) values that the JSON file decodes to, taken as
+> exact rationals. For example, `V0* = 11.9000000000000003552713678800500929355621337890625`,
+> not the decimal 11.9. With a box this thin, the difference matters.
+
+## Reproduce the proof (about 2 minutes for certifier 1, under a second for certifier 2)
+
+```bash
+pip install -r requirements.txt
+
+# certifier 1: the exact stroke, then the whole box
+CERT_PREC=1200 python proof/certify_mpmath.py proof/witness_21.json 0 0
+CERT_PREC=1200 python proof/certify_mpmath.py proof/witness_21.json 1e-90 1e-90
+
+# certifier 2 (independent implementation)
+python proof/certify_arb.py --r 0
+python proof/certify_arb.py --r 1e-90
+```
+
+Each run ends with `CERTIFIED` and exits with code 0, or prints
+`NOT CERTIFIED: <reason>` and exits with code 1. (On Windows PowerShell,
+set the variable first: `$env:CERT_PREC=1200`.)
+
+## Why exact arithmetic is essential
+
+A thin cut turns any small lateral error into a larger change of
+direction. Errors grow by a factor of roughly 10 to 70 per collision,
+which is about 10^30 or more over the chain. A double-precision
+simulation (16 digits) therefore carries no information about the true
+trajectory after a few collisions. Earlier versions of this project
+built the witness in double precision, and that witness turned out
+**not** to be a witness of Model M. It is kept, with an explanation, in
+[`archive/float_witness/`](archive/float_witness/). The present witness
+was built in 80-digit arithmetic and then certified as above.
+
+## Repository map
+
+```
+model/          the physics of Model M
+  model_sim.py        fast double-precision engine (used for Monte Carlo)
+  model_sim_mp.py     the same engine at 80 digits, no numerical nudges
+  make_model_sim_mp.py  regenerates model_sim_mp.py from model_sim.py
+proof/          the rigorous part
+  witness_21.json     the certified layout and stroke
+  certify_mpmath.py   certifier 1
+  certify_arb.py      certifier 2
+  certificates/       saved outputs (box_search/: wider boxes tried)
+construction/   how the witness was found
+  witness_bv.py       build-and-verify constructor (grows the chain ball by ball)
+  witness_bv_exact.py runs it in the 80-digit engine
+  other_chains/       two more 21-ball chains it found (not certified)
+  bv_robust_3ball.json  a short chain with a visibly fat success set
+simulation/     how rare is rare: Monte Carlo from the opening break
+  mc_break.py, mc_results.json, mc_sensitivity.json, fit_summary.txt
+figures/        scripts and images
+archive/        superseded approaches, kept for provenance
+```
 
 ## The model in one paragraph
 
-A rectangular table (`L × W`), 22 unit-radius balls, constant
-deceleration `a` opposing motion (rolling friction), ball–ball collisions
-with normal restitution `e`, cushion rebounds with restitution `e_c`, six
-pocket capture-disks of radius `ρ`, and no spin. A "shot" is a pair
-`(V₀, φ)`: launch speed and direction of the cue. Everything is
-event-driven and exact between events, so a trajectory is a finite
-composition of explicit algebraic maps. Full constants are in
-`model_sim.py` and in the paper's Appendix A.
+The table is a 3.569 m × 1.778 m rectangle. It holds 22 balls of radius
+26.25 mm and has six pockets: a ball is pocketed when its centre comes
+within 55 mm of a pocket point. Between events each ball decelerates at
+a constant 0.10 m/s² along its direction of motion. Ball-ball collisions
+are frictionless with normal restitution 0.95. A cushion reverses the
+normal velocity and scales it by 0.90. There is no spin. A stroke is a
+pair `(V0, phi)`. Between events the motion is explicit, so a
+trajectory is a finite chain of explicit algebraic maps.
 
-## How the witness was built
+## Rebuild a witness from scratch
 
-Earlier attempts predicted the whole collision chain analytically and
-then checked it — but once cushion rebounds accumulate, an analytic path
-drifts from what the engine actually does, and nothing reproduces. The
-working method (`witness_bv.py`) is **build-and-verify**: it grows the
-chain one collision at a time *inside* the engine, reading the cue's
-actual post-collision state, placing each new ball so the struck ball
-departs straight at a pocket, and re-verifying the whole prefix (every
-placed ball must actually pocket) before committing. The engine is the
-single source of truth, so there is no drift by construction.
+```bash
+python construction/witness_bv_exact.py 7 my_chain.json   # ~6 minutes
+CERT_PREC=1200 python proof/certify_mpmath.py my_chain.json 0 0
+```
 
-The physical trick that makes 21 reachable: the cue is the sole carrier
-and must survive 21 collisions, so it uses **thick, near-grazing cuts**
-that keep ~90%+ of its speed while still sending each struck ball off
-with enough to reach a pocket, plus cushion rebounds to reach balls all
-over the table.
+Seed 7 reproduces `proof/witness_21.json`. Other seeds give other chains,
+and some seeds dead-end.
 
-## Status of the proof
+## Reproduce the simulations and figures
 
-The existence theorem is **computer-assisted**: the witness trajectory is
-a finite composition of explicit algebraic maps, verified in double
-precision with margins many orders of magnitude above the rounding scale.
-A rigorous interval-arithmetic certificate would be a routine finite
-upgrade; the paper flags this explicitly.
+```bash
+python simulation/mc_break.py 30000        # P(k) from the opening break (resumable)
+python simulation/mc_break.py 2500 sens    # friction x restitution sensitivity grid
+python figures/make_figures.py             # witness layout + P(k) figure
+python figures/make_gif.py                 # the animation above
+```
 
 ## Citation
 
-If you use this work, please cite the paper:
-
-```bibtex
-@misc{kantor2026oneshot,
-  author       = {Avner Kantor},
-  title        = {One Shot, Twenty-One Balls: Existence and Rarity of a
-                  Total Clearance in a Single Stroke of Snooker},
-  year         = {2026},
-  howpublished = {Manuscript and code},
-  note         = {Israel Central Bureau of Statistics},
-  url          = {https://github.com/avnerkantor/one-shot-twenty-one-balls}
-}
-```
-
-Add a DOI (e.g. via Zenodo) or an arXiv identifier here when available. A
-plain-text citation and machine-readable metadata are in
-[`CITATION.cff`](CITATION.cff).
-
-## Author
-
-**Avner Kantor** — Israel Central Bureau of Statistics.
-
-## License
-
-Released under the MIT License — see [`LICENSE`](LICENSE).
+See [`CITATION.cff`](CITATION.cff). Note that the arXiv preprint
+(arXiv:2607.12995, v1) describes the earlier double-precision witness.

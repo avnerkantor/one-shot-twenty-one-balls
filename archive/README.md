@@ -12,9 +12,12 @@ intended chain end to end. Running `witness_tree.py` will report
 `skeleton N failed branch attachment` for every candidate — that is the
 expected (honest) failure, not a crash.
 
-The working method is in the top-level `witness_bv.py` (build-and-verify),
+The working method is `construction/witness_bv.py` (build-and-verify),
 which grows the chain one collision at a time *inside* the engine and so
 never drifts. See the root `README.md`.
+
+`float_witness/` holds the earlier double-precision witness, which is
+not valid in the exact model; its README explains why.
 
 Contents:
 - `witness_tree.py`    — open-loop trunk/branch constructor (does not solve it)

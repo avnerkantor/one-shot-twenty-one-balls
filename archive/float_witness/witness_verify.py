@@ -19,12 +19,16 @@ import json
 import math
 import sys
 
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', 'model'))
+
 import model_sim as M
 
 R = M.R
 
 
-def verify(path="witness_21.json"):
+def verify(path=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "witness_21_float.json")):
     w = json.load(open(path))
     cue0, v0, phi = w["cue"], w["v0"], w["phi"]
     ball_xy = w["balls"]
@@ -87,5 +91,5 @@ def verify(path="witness_21.json"):
 
 
 if __name__ == "__main__":
-    src = sys.argv[1] if len(sys.argv) > 1 else "witness_21.json"
+    src = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "witness_21_float.json")
     sys.exit(0 if verify(src) else 1)

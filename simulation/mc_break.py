@@ -25,6 +25,13 @@ import random
 import sys
 import time
 
+import os as _os
+import sys as _sys
+
+_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+_sys.path.insert(0, _os.path.join(_ROOT, "model"))
+_os.chdir(_os.path.dirname(_os.path.abspath(__file__)))  # outputs live here
+
 import model_sim as M
 
 V_MAX = 12.0

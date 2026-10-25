@@ -1,0 +1,74 @@
+witness_certify_arb.py  model M, Arb ball arithmetic, prec=1200 bits
+data: witness_21_exact.json   v0=11.9  phi=-0.03491508260754981  r=0 (radius used: 0)
+events: idx kind names  t>=elapsed-time-lower-bound  speeds (lower bounds)
+  1  bb     cue b0       t>=9.450000000e-2  vn>=1.419151462
+  2  bb     cue b1       t>=1.095000000e-1  vn>=1.554616294
+  3  bb     cue b2       t>=2.460000000e-1  vn>=1.574129758
+  4  bb     cue b3       t>=2.565000000e-1  vn>=2.714236414
+  5  wall   cue right    t>=2.590165868e-1  vn>=1.122503868e+1
+  6  wall   b3 right     t>=3.670449493e-1  vn>=2.161395410e-1
+  7  bb     cue b4       t>=4.290000000e-1  vn>=1.294903864
+  8  pocket b3 C-br      t>=4.784176380e-1  vr>=1.119311698  |v|>=2.622504141
+  9  pocket b1 M-b       t>=5.174051043e-1  vr>=1.474960376  |v|>=1.474960376
+ 10  bb     cue b5       t>=5.940000000e-1  vn>=1.252083387
+ 11  bb     cue b6       t>=6.060000000e-1  vn>=2.356713351
+ 12  wall   cue left     t>=6.090400312e-1  vn>=9.634921404
+ 13  wall   b6 left      t>=7.500983585e-1  vn>=1.748239906e-1
+ 14  pocket b0 M-t       t>=7.905743405e-1  vr>=1.314065241  |v|>=1.314065241
+ 15  bb     cue b7       t>=8.040000000e-1  vn>=1.329594434
+ 16  wall   b2 right     t>=8.382205941e-1  vn>=2.319877461e-1
+ 17  pocket b6 C-bl      t>=8.888946498e-1  vr>=9.665703029e-1  |v|>=2.268234110
+ 18  pocket b2 C-tr      t>=9.303906396e-1  vr>=6.446966521e-1  |v|>=1.462868410
+ 19  bb     cue b8       t>=9.900000000e-1  vn>=1.523771908
+ 20  wall   cue right    t>=1.019200386  vn>=8.164445105
+ 21  pocket b4 M-t       t>=1.131032976  vr>=1.192327969  |v|>=1.192327969
+ 22  bb     cue b9       t>=1.174500000  vn>=1.066519028
+ 23  wall   cue bottom   t>=1.287848963  vn>=2.994520013
+ 24  wall   b5 left      t>=1.301133466  vn>=1.898354977e-1
+ 25  bb     cue b10      t>=1.302000000  vn>=1.616936226
+ 26  pocket b5 C-tl      t>=1.412250092  vr>=5.028195669e-1  |v|>=1.135975594
+ 27  pocket b7 M-t       t>=1.448871704  vr>=1.231867403  |v|>=1.231867403
+ 28  bb     cue b11      t>=1.482000000  vn>=2.227462296
+ 29  wall   cue left     t>=1.513136841  vn>=6.784697098
+ 30  wall   b8 right     t>=1.615006197  vn>=3.529298811e-1
+ 31  pocket b8 C-tr      t>=1.663354918  vr>=6.600371659e-1  |v|>=1.410003083
+ 32  wall   cue bottom   t>=1.721999819  vn>=1.008067135
+ 33  bb     cue b12      t>=2.079000000  vn>=8.508696218e-1
+ 34  wall   b11 left     t>=2.092192668  vn>=3.281671628e-1
+ 35  wall   cue right    t>=2.092246702  vn>=5.813771278
+ 36  bb     cue b13      t>=2.128500000  vn>=8.458235893e-1
+ 37  pocket b11 C-tl     t>=2.157462883  vr>=9.243353210e-1  |v|>=2.099376842
+ 38  wall   b12 right    t>=2.347436226  vn>=2.276565197e-1
+ 39  pocket b10 M-t      t>=2.369633310  vr>=1.469749490  |v|>=1.469749490
+ 40  bb     cue b14      t>=2.382000000  vn>=8.130691181e-1
+ 41  pocket b12 C-br     t>=2.413651217  vr>=3.805698886e-1  |v|>=7.899757495e-1
+ 42  bb     cue b15      t>=2.646000000  vn>=1.233436801
+ 43  pocket b9 M-t       t>=2.659574454  vr>=8.913486074e-1  |v|>=8.913486074e-1
+ 44  wall   cue left     t>=2.788247990  vn>=4.429720299
+ 45  bb     cue b16      t>=2.814000000  vn>=5.021585139e-1
+ 46  bb     cue b17      t>=2.889000000  vn>=8.750174708e-1
+ 47  wall   cue top      t>=2.908263657  vn>=2.874354780
+ 48  bb     cue b18      t>=2.971500000  vn>=7.752709830e-1
+ 49  bb     cue b19      t>=3.145499999  vn>=6.174667400e-1
+ 50  pocket b14 M-b      t>=3.154348110  vr>=7.155075791e-1  |v|>=7.155075791e-1
+ 51  wall   b16 left     t>=3.173429156  vn>=2.097275962e-1
+ 52  pocket b16 C-tl     t>=3.180240883  vr>=2.533456719e-1  |v|>=4.436740942e-1
+ 53  bb     cue b20      t>=3.253499999  vn>=4.340410469
+ 54  pocket b15 C-bl     t>=3.654351628  vr>=1.101765718  |v|>=1.101765718
+ 55  wall   b13 right    t>=3.657300340  vn>=1.064791952e-1
+ 56  pocket b20 C-br     t>=3.703865975  vr>=4.186863610  |v|>=4.186863610
+ 57  pocket b13 C-tr     t>=3.860061031  vr>=2.866229709e-1  |v|>=6.499166800e-1
+ 58  pocket b19 M-t      t>=4.073575388  vr>=5.092225326e-1  |v|>=5.092225326e-1
+ 59  wall   b18 left     t>=5.599585493  vn>=2.099495547e-1
+ 60  pocket b18 C-bl     t>=5.622063663  vr>=2.653549255e-1  |v|>=4.822659201e-1
+ 61  pocket b17 M-b      t>=5.790217664  vr>=5.630202676e-1  |v|>=5.630202676e-1
+
+summary: 61 events (bb 21, wall 19, pocket 21, stop 0)
+  min bb normal approach speed      >= 5.021585139e-1
+  min cushion normal approach speed >= 1.064791952e-1
+  min pocket radial entry speed     >= 2.533456719e-1
+  min pocket entry speed |v|        >= 4.436740942e-1
+  final time enclosure  [5.790217664, +2.705e-278]
+  final state enclosure max radius   4.417e-279 ; max event-time radius 2.305e-278
+  wall time 0.1 s
+CERTIFIED

@@ -1,0 +1,75 @@
+certifying witness_21_exact.json: V0 +/- 0, phi +/- 0, 1200-bit interval arithmetic
+  1  t in [0.0945, +1.4e-349]  bb     cue / b0        normal speed >= 1.419
+  2  t in [0.1095, +3.3e-347]  bb     cue / b1        normal speed >= 1.555
+  3  t in [0.246, +1.5e-343]  bb     cue / b2        normal speed >= 1.574
+  4  t in [0.2565, +8.8e-342]  bb     cue / b3        normal speed >= 2.714
+  5  t in [0.2590165868, +2.6e-341]  wall   cue / right     normal speed >= 11.23
+  6  t in [0.3670449494, +9.8e-339]  wall   b3 / right      normal speed >= 0.2161
+  7  t in [0.429, +2.4e-336]  bb     cue / b4        normal speed >= 1.295
+  8  t in [0.4784176381, +4.0e-335]  pocket b3 / C-br       entry speed >= 2.623
+  9  t in [0.5174051044, +1.9e-334]  pocket b1 / M-b        entry speed >= 1.475
+ 10  t in [0.594, +7.9e-332]  bb     cue / b5        normal speed >= 1.252
+ 11  t in [0.606, +4.8e-330]  bb     cue / b6        normal speed >= 2.357
+ 12  t in [0.6090400313, +1.4e-329]  wall   cue / left      normal speed >= 9.635
+ 13  t in [0.7500983585, +5.5e-327]  wall   b6 / left       normal speed >= 0.1748
+ 14  t in [0.7905743406, +2.6e-326]  pocket b0 / M-t        entry speed >= 1.314
+ 15  t in [0.804, +1.3e-324]  bb     cue / b7        normal speed >= 1.33
+ 16  t in [0.8382205941, +3.8e-324]  wall   b2 / right      normal speed >= 0.232
+ 17  t in [0.8888946499, +8.7e-323]  pocket b6 / C-bl       entry speed >= 2.268
+ 18  t in [0.9303906397, +7.5e-322]  pocket b2 / C-tr       entry speed >= 1.463
+ 19  t in [0.99, +1.7e-319]  bb     cue / b8        normal speed >= 1.524
+ 20  t in [1.019200386, +8.4e-319]  wall   cue / right     normal speed >= 8.164
+ 21  t in [1.131032977, +6.6e-318]  pocket b4 / M-t        entry speed >= 1.192
+ 22  t in [1.1745, +2.8e-315]  bb     cue / b9        normal speed >= 1.067
+ 23  t in [1.287848963, +1.9e-313]  wall   cue / bottom    normal speed >= 2.995
+ 24  t in [1.301133467, +5.4e-313]  wall   b5 / left       normal speed >= 0.1898
+ 25  t in [1.302, +1.9e-312]  bb     cue / b10       normal speed >= 1.617
+ 26  t in [1.412250093, +2.6e-311]  pocket b5 / C-tl       entry speed >= 1.136
+ 27  t in [1.448871704, +1.2e-310]  pocket b7 / M-t        entry speed >= 1.232
+ 28  t in [1.482, +1.2e-308]  bb     cue / b11       normal speed >= 2.227
+ 29  t in [1.513136841, +5.7e-308]  wall   cue / left      normal speed >= 6.785
+ 30  t in [1.615006198, +1.6e-307]  wall   b8 / right      normal speed >= 0.3529
+ 31  t in [1.663354919, +1.6e-306]  pocket b8 / C-tr       entry speed >= 1.41
+ 32  t in [1.721999819, +1.4e-305]  wall   cue / bottom    normal speed >= 1.008
+ 33  t in [2.079, +3.2e-302]  bb     cue / b12       normal speed >= 0.8509
+ 34  t in [2.092192669, +7.9e-302]  wall   b11 / left      normal speed >= 0.3282
+ 35  t in [2.092246702, +2.7e-301]  wall   cue / right     normal speed >= 5.814
+ 36  t in [2.1285, +5.0e-299]  bb     cue / b13       normal speed >= 0.8458
+ 37  t in [2.157462884, +4.4e-298]  pocket b11 / C-tl      entry speed >= 2.099
+ 38  t in [2.347436226, +2.3e-297]  wall   b12 / right     normal speed >= 0.2277
+ 39  t in [2.369633311, +8.5e-297]  pocket b10 / M-t       entry speed >= 1.47
+ 40  t in [2.382, +4.0e-295]  bb     cue / b14       normal speed >= 0.8131
+ 41  t in [2.413651218, +2.0e-294]  pocket b12 / C-br      entry speed >= 0.79
+ 42  t in [2.646, +7.9e-291]  bb     cue / b15       normal speed >= 1.233
+ 43  t in [2.659574454, +2.1e-290]  pocket b9 / M-t        entry speed >= 0.8913
+ 44  t in [2.78824799, +4.8e-289]  wall   cue / left      normal speed >= 4.43
+ 45  t in [2.814, +5.4e-287]  bb     cue / b16       normal speed >= 0.5022
+ 46  t in [2.889, +5.8e-284]  bb     cue / b17       normal speed >= 0.875
+ 47  t in [2.908263658, +2.8e-283]  wall   cue / top       normal speed >= 2.874
+ 48  t in [2.9715, +1.2e-280]  bb     cue / b18       normal speed >= 0.7753
+ 49  t in [3.1455, +5.3e-277]  bb     cue / b19       normal speed >= 0.6175
+ 50  t in [3.15434811, +1.4e-276]  pocket b14 / M-b       entry speed >= 0.7155
+ 51  t in [3.173429157, +3.3e-276]  wall   b16 / left      normal speed >= 0.2097
+ 52  t in [3.180240883, +1.1e-275]  pocket b16 / C-tl      entry speed >= 0.4437
+ 53  t in [3.2535, +2.0e-273]  bb     cue / b20       normal speed >= 4.34
+ 54  t in [3.654351628, +4.3e-272]  pocket b15 / C-bl      entry speed >= 1.102
+ 55  t in [3.65730034, +1.0e-271]  wall   b13 / right     normal speed >= 0.1065
+ 56  t in [3.703865975, +4.1e-270]  pocket b20 / C-br      entry speed >= 4.187
+ 57  t in [3.860061032, +7.4e-269]  pocket b13 / C-tr      entry speed >= 0.6499
+ 58  t in [4.073575388, +6.6e-268]  pocket b19 / M-t       entry speed >= 0.5092
+ 59  t in [5.599585494, +3.1e-267]  wall   b18 / left      normal speed >= 0.2099
+ 60  t in [5.622063663, +1.9e-266]  pocket b18 / C-bl      entry speed >= 0.4823
+ 61  t in [5.790217665, +1.6e-265]  pocket b17 / M-b       entry speed >= 0.563
+
+events                      : 61
+collisions                  : 21
+cushions                    : 19
+pocketings                  : 21
+min_collision_normal_speed  : 0.502159
+min_cushion_normal_speed    : 0.106479
+min_pocket_entry_speed      : 0.443674
+final_enclosure_width       : 7.78e-266
+final_time                  : 5.790217665
+wall time                   : 69.2 s
+
+CERTIFIED: every shot in the box pockets all 21 object balls.

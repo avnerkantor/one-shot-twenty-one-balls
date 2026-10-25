@@ -33,6 +33,12 @@ different seed / cue angle).
 import math
 import random
 
+import os as _os
+import sys as _sys
+
+_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+_sys.path.insert(0, _os.path.join(_ROOT, "model"))
+
 import model_sim as M
 
 R, A, E = M.R, M.A, M.E_BALL
