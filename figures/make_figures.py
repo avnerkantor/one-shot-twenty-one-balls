@@ -46,28 +46,37 @@ def fig_witness(src=os.path.join(ROOT, "proof", "witness_21.json"),
     ax.annotate("cue", w["cue"], textcoords="offset points",
                 xytext=(-4, 6), fontsize=7)
 
-    for i, (p, g) in enumerate(zip(w["balls"], w["pockets"])):
+    for i, p in enumerate(w["balls"]):
         ax.add_patch(Circle(p, R, fc="0.4", ec="black", zorder=3))
         ax.annotate(str(i + 1), p, textcoords="offset points",
                     xytext=(3, 4), fontsize=6)
-        gx, gy = pockets[g]
-        ax.plot([p[0], gx], [p[1], gy], lw=0.5, ls=":",
-                color="0.55", zorder=1)
 
+    # replay up to the last object-ball pocketing (the certified part),
+    # recording every ball's position at every event: straight lines in
+    # between, so these vertices draw the exact routes
     balls = [M.Ball(w["cue"][0], w["cue"][1], "cue")]
     for i, p in enumerate(w["balls"]):
         balls.append(M.Ball(p[0], p[1], f"b{i}"))
     M.shoot(balls[0], w["v0"], w["phi"])
     sim = M.Simulator(balls, record_events=True)
-    cue = balls[0]
-    path = [(float(cue.x), float(cue.y))]
+    paths = {b.name: [(float(b.x), float(b.y))] for b in balls}
+    n_obj = len(balls) - 1
     for _ in range(9000):
         if not sim.step():
             break
-        path.append((float(cue.x), float(cue.y)))
-        if not cue.active:
+        for b in balls:
+            xy = (float(b.x), float(b.y))
+            if xy != paths[b.name][-1] and (b.active or
+                                            sim.events[-1][2] == b.name):
+                paths[b.name].append(xy)
+        if sum(1 for _, nm, _, _ in sim.pocketed if nm != "cue") == n_obj:
             break
-    ax.plot([p[0] for p in path], [p[1] for p in path],
+    for b in balls[1:]:
+        pts = paths[b.name]
+        ax.plot([q[0] for q in pts], [q[1] for q in pts], lw=0.6, ls=":",
+                color="0.45", zorder=1)
+    pts = paths["cue"]
+    ax.plot([q[0] for q in pts], [q[1] for q in pts],
             lw=0.8, color="C3", alpha=0.7, zorder=2)
 
     ax.set_xlim(-0.1, L + 0.1)

@@ -22,8 +22,20 @@ behind the second.
 * direction `phi` within `1e-90` rad of `phi*`
 
 pockets all 21 object balls in Model M. So the set of winning strokes
-contains a rectangle of area at least `4e-180`. It has positive measure,
-but it is unimaginably thin.
+has positive measure.
+
+**Stronger: a long, thin ribbon.** Every stroke with speed anywhere in
+`[V0* - 2.3, V0* + 0.1]` (about 9.6 to 12 m/s, the top of the model's
+shot range) and direction within `1e-90` rad of `phi*` also pots all 21.
+Almost any strength works, but the aim has to be right to 90 decimal
+places. (80-digit replays put the true angular width below `1e-40`.)
+This follows from a geometric fact about this witness. Every collision
+is a moving ball striking a ball at rest, so every ball's path is the
+same polyline whatever the speed; only the timing changes.
+[`proof/certify_strip.py`](proof/certify_strip.py) proves that the
+paths are as planned for the whole angle box. It also proves that no
+two balls are ever within one diameter of each other at the same
+instant for any speed in the range.
 
 The proof is a rigorous replay of the stroke in interval arithmetic,
 checked by two independent programs written against different
@@ -63,6 +75,10 @@ CERT_PREC=1200 python proof/certify_mpmath.py proof/witness_21.json 1e-90 1e-90
 # certifier 2 (independent implementation)
 python proof/certify_arb.py --r 0
 python proof/certify_arb.py --r 1e-90
+
+# the speed ribbon: one sub-strip (about 40 s); the 48 sub-strips covering
+# V0* + [-2.3, 0.1] are listed in proof/certificates/strip/SUMMARY.md
+CERT_PREC=400 python proof/certify_strip.py -0.05 0 1e-90
 ```
 
 Each run ends with `CERTIFIED` and exits with code 0, or prints
@@ -92,6 +108,7 @@ proof/          the rigorous part
   witness_21.json     the certified layout and stroke
   certify_mpmath.py   certifier 1
   certify_arb.py      certifier 2
+  certify_strip.py    the speed-ribbon certificate
   certificates/       saved outputs (box_search/: wider boxes tried)
 construction/   how the witness was found
   witness_bv.py       build-and-verify constructor (grows the chain ball by ball)

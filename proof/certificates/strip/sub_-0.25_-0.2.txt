@@ -1,0 +1,10 @@
+certifying strip: V0 in V0* + [-0.25, -0.2], phi +/- 1e-90, 400 bits
+planned events              : 61
+pieces (rest + straight)    : 83
+collisions (moving onto rest): 21
+piece pairs examined        : 2603 (40 needed a timing argument)
+min pocket entry speed      : 0.431841 m/s (slowest stroke)
+all pocketed by time        : 5.9596611 s
+wall time                   : 8.7 s
+
+CERTIFIED: every stroke in the strip pockets all 21 object balls.

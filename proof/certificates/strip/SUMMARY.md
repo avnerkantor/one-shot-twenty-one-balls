@@ -1,0 +1,52 @@
+# Speed strip: V0 in V0* + [-2.3, +0.1], phi in phi* +/- 1e-90
+
+48 sub-strips of width 0.05 m/s, each certified by proof/certify_strip.py (400 bits).
+
+- -2.3 to -2.25: CERTIFIED
+- -2.25 to -2.2: CERTIFIED
+- -2.2 to -2.15: CERTIFIED
+- -2.15 to -2.1: CERTIFIED
+- -2.1 to -2.05: CERTIFIED
+- -2.05 to -2: CERTIFIED
+- -2 to -1.95: CERTIFIED
+- -1.95 to -1.9: CERTIFIED
+- -1.9 to -1.85: CERTIFIED
+- -1.85 to -1.8: CERTIFIED
+- -1.8 to -1.75: CERTIFIED
+- -1.75 to -1.7: CERTIFIED
+- -1.7 to -1.65: CERTIFIED
+- -1.65 to -1.6: CERTIFIED
+- -1.6 to -1.55: CERTIFIED
+- -1.55 to -1.5: CERTIFIED
+- -1.5 to -1.45: CERTIFIED
+- -1.45 to -1.4: CERTIFIED
+- -1.4 to -1.35: CERTIFIED
+- -1.35 to -1.3: CERTIFIED
+- -1.3 to -1.25: CERTIFIED
+- -1.25 to -1.2: CERTIFIED
+- -1.2 to -1.15: CERTIFIED
+- -1.15 to -1.1: CERTIFIED
+- -1.1 to -1.05: CERTIFIED
+- -1.05 to -1: CERTIFIED
+- -1 to -0.95: CERTIFIED
+- -0.95 to -0.9: CERTIFIED
+- -0.9 to -0.85: CERTIFIED
+- -0.85 to -0.8: CERTIFIED
+- -0.8 to -0.75: CERTIFIED
+- -0.75 to -0.7: CERTIFIED
+- -0.7 to -0.65: CERTIFIED
+- -0.65 to -0.6: CERTIFIED
+- -0.6 to -0.55: CERTIFIED
+- -0.55 to -0.5: CERTIFIED
+- -0.5 to -0.45: CERTIFIED
+- -0.45 to -0.4: CERTIFIED
+- -0.4 to -0.35: CERTIFIED
+- -0.35 to -0.3: CERTIFIED
+- -0.3 to -0.25: CERTIFIED
+- -0.25 to -0.2: CERTIFIED
+- -0.2 to -0.15: CERTIFIED
+- -0.15 to -0.1: CERTIFIED
+- -0.1 to -0.05: CERTIFIED
+- -0.05 to 0: CERTIFIED
+- 0 to 0.05: CERTIFIED
+- 0.05 to 0.1: CERTIFIED

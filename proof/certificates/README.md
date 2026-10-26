@@ -21,3 +21,13 @@ A failure at a wider box means that the interval enclosures became too
 wide to decide. It does not mean that a stroke misses: replays in the
 80-digit engine still pot all 21 with V0 changed by +-0.05 m/s. The sensitive
 direction is the angle phi.
+
+## Speed ribbon
+
+`strip/` holds 48 runs of `certify_strip.py`. Each run is a sub-strip
+0.05 m/s wide in speed, by +-1e-90 rad in angle. Together they cover
+V0 in V0* + [-2.3, +0.1]; see `strip/SUMMARY.md`.
+`strip_single_dV0.01.txt` is a single run over +-0.01 m/s. A single
+run over +-0.05 fails only because the interval enclosure is too loose
+for one near-encounter (the cue and b17 just after event 47);
+splitting the range into sub-strips resolves it.
