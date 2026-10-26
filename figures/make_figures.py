@@ -83,8 +83,6 @@ def fig_witness(src=os.path.join(ROOT, "proof", "witness_21.json"),
     ax.set_ylim(-0.1, W + 0.1)
     ax.set_aspect("equal")
     ax.axis("off")
-    ax.set_title("Certified 21-ball single-stroke clearance "
-                 "(cue path in red)", fontsize=9)
     fig.tight_layout()
     fig.savefig(out, bbox_inches="tight")
     fig.savefig(out.replace(".pdf", ".png"), dpi=150, bbox_inches="tight")
