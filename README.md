@@ -88,8 +88,8 @@ set the variable first: `$env:CERT_PREC=1200`.)
 ## Why exact arithmetic is essential
 
 A thin cut turns any small lateral error into a larger change of
-direction. Errors grow by a factor of roughly 10 to 70 per collision,
-which is about 10^30 or more over the chain. A double-precision
+direction. Errors grow by a factor of tens to hundreds per collision,
+about 10^39 over the whole chain. A double-precision
 simulation (16 digits) therefore carries no information about the true
 trajectory after a few collisions. Earlier versions of this project
 built the witness in double precision, and that witness turned out
@@ -115,8 +115,11 @@ construction/   how the witness was found
   witness_bv_exact.py runs it in the 80-digit engine
   other_chains/       two more 21-ball chains it found (not certified)
   bv_robust_3ball.json  a short chain with a visibly fat success set
-simulation/     how rare is rare: Monte Carlo from the opening break
+simulation/     how rare is rare: Monte Carlo experiments
   mc_break.py, mc_results.json, mc_sensitivity.json, fit_summary.txt
+                      strokes from the opening break
+  mc_random_layouts.py, random_layout_runs/
+                      strokes from random layouts of the 22 balls
 figures/        scripts and images
 archive/        superseded approaches, kept for provenance
 ```
@@ -147,9 +150,17 @@ and some seeds dead-end.
 ```bash
 python simulation/mc_break.py 30000        # P(k) from the opening break (resumable)
 python simulation/mc_break.py 2500 sens    # friction x restitution sensitivity grid
+python simulation/mc_random_layouts.py 25000 1 run_1.json   # random layouts (seeds 1 to 8 were used)
 python figures/make_figures.py             # witness layout + P(k) figure
 python figures/make_gif.py                 # the animation above
 ```
+
+**Are random layouts friendlier?** Not in the tail. Each trial places
+all 22 balls at random and plays a random stroke. In 200,000 trials,
+random layouts beat the break by a factor of two or three for two to
+six balls. That advantage fades as the count grows. The best stroke
+potted nine balls. Extrapolating to all twenty-one gives about 10^-12
+to 10^-13, about the same as the break.
 
 ## Citation
 
