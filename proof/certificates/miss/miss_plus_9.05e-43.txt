@@ -1,0 +1,8 @@
+direction box: phi* + 9.05e-43 +/- 1.0e-90
+  exact centre offset 74781956469396872756435419221207223880588279760334312931575894965417155133607721*2^-405, half-width 483067190377157293086918986366498418037365916213304374832154406431439892786195053*2^-567
+  decimal enclosure of the offset: [9.05e-43, 9.05e-43]
+  precision 1200 bits
+  proof: event 56: b20 reaches cushion right after arc length <= 1.904095861 m, before pocket C-br (arc length >= 1.90411315 m)
+
+CERTIFIED MISS: no stroke with direction in this box, at any speed, follows the witness's event list.
+wall time: 0.1 s
