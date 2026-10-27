@@ -135,12 +135,18 @@ def rng(x):
 
 # ----------------------------------------------------------- geometry
 class Piece:
+    """As in certify_strip.Piece, with geometry in centred forms. In
+    addition al, be, be1 (centred forms in phi) record the speed scaling
+    along the skeleton: on this piece the squared speed at arc length s is
+    al * V0^2 - (be + 2 a s), so be1 = be + 2 a ell is the value at the end
+    of the piece (Lemma on speed scaling)."""
     __slots__ = ("ball", "kind", "P", "u", "ell", "t0", "t1", "v0", "v1",
-                 "e0", "e1")
+                 "e0", "e1", "al", "be", "be1")
 
     def __init__(self, ball, kind, P, t0, e0):
         self.ball, self.kind, self.P, self.t0, self.e0 = ball, kind, P, t0, e0
         self.u = self.ell = self.t1 = self.v0 = self.v1 = self.e1 = None
+        self.al = self.be = self.be1 = None
 
 
 def first_contact(P, u, Q, rad):
@@ -181,6 +187,8 @@ def end_piece(pc, s, event):
     """s: centred form (or interval) arc length of the piece."""
     sr = rng(s)
     pc.ell = s
+    if pc.al is not None:
+        pc.be1 = pc.be + s * (2 * A)
     pc.v1 = S.travel(pc.v0, sr)
     pc.t1 = pc.t0 + 2 * sr / (pc.v0 + pc.v1)
     pc.e1 = event
@@ -212,9 +220,11 @@ def reflect(pc, wall, s, event):
         ux = ux * (-EC)
     else:
         uy = uy * (-EC)
-    f = (ux * ux + uy * uy).sqrt()
+    f2 = ux * ux + uy * uy
+    f = f2.sqrt()
     np_ = Piece(pc.ball, "move", tuple(C), pc.t1, event)
     np_.u, np_.v0 = (ux / f, uy / f), f.range() * pc.v1
+    np_.al, np_.be = f2 * pc.al, f2 * pc.be1
     return np_
 
 
@@ -238,6 +248,7 @@ def build(w, V, phic, h, plan_t):
     cue.kind = "move"
     cue.u = (CF(iv.cos(phic_iv), -iv.sin(PHI)), CF(iv.sin(phic_iv), iv.cos(PHI)))
     cue.v0 = V
+    cue.al, cue.be = CF(1), CF(0)
     walls = {wl[0]: wl for wl in S.WALLS}
     same_start, designed, potted = [], [], []
     for ev_i, ev in enumerate(plan_t, start=1):
@@ -260,11 +271,15 @@ def build(w, V, phic, h, plan_t):
                 raise Fail(f"event {ev_i}: not approaching")
             k = un * ((1 + E) / 2)
             wx, wy = pm.u[0] - k * nx, pm.u[1] - k * ny
-            f = (wx * wx + wy * wy).sqrt()
+            f2 = wx * wx + wy * wy
+            f = f2.sqrt()
+            k2 = k * k
             nm_ = Piece(mover, "move", C, pm.t1, ev_i)
             nm_.u, nm_.v0 = (wx / f, wy / f), f.range() * pm.v1
+            nm_.al, nm_.be = f2 * pm.al, f2 * pm.be1
             nr = Piece(rest, "move", pr.P, pm.t1, ev_i)
             nr.u, nr.v0 = (nx, ny), k.range() * pm.v1
+            nr.al, nr.be = k2 * pm.al, k2 * pm.be1
             pieces[mover].append(nm_)
             pieces[rest].append(nr)
             cur[mover], cur[rest] = nm_, nr

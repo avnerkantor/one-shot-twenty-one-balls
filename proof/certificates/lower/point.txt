@@ -1,0 +1,10 @@
+lower speed limit over phi* + [-1.0e-90, 1.0e-90], 1200 bits
+  exact offsets: -483067190377157293086918986366498418037365916213304374832154406431439892786195053*2^-567, +483067190377157293086918986366498418037365916213304374832154406431439892786195053*2^-567
+pieces of the window        : 1
+critical piece              : b18 from event 59 to event 60
+V_c^2 (max beta_end/alpha)  : [86.886077553175597653, 86.886077553175597653]
+V_c                         : [9.321270168446765799, 9.321270168446765799] m/s
+V_c - V0*                   : [-2.57872983155323, -2.57872983155323] m/s
+wall time                   : 0.4 s
+
+PROVED: for every direction phi in the window, a stroke (V0, phi) with V0 <= V_c(phi) does not realise the event list: the critical ball comes to rest at or before the designated end of its piece. Here V_c(phi) lies in the interval above.

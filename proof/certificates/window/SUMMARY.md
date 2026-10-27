@@ -1,4 +1,4 @@
-# Direction window x speed ribbon: phi in phi* + [-4.3586e-44, 9.0454e-43], V0 in V0* + [-2.3, +0.1]
+# Direction window x speed ribbon: phi in phi* + [-4.3586e-44, 9.0454e-43], V0 in V0* + [-2.578685, +0.1]
 
 48 sub-strips of width 0.05 m/s, each certified over the whole window by proof/certify_window.py (400 bits, centred forms in phi).
 
@@ -54,3 +54,25 @@
 | [0.05, 0.1] | CERTIFIED | 25 (of 49 tried) |
 
 `window_dV0.01.txt` is a single run over V0* +/- 0.01.
+
+## Down to the lower edge
+
+Ten further sub-strips, run with the same window after the lower speed
+limit was enclosed by `certify_lower.py` (V_c in [9.3203575, 9.3213142]
+m/s over the window, see `../lower/window.txt`). Their lower end,
+V0* - 2.578685 = 9.321315 m/s, exceeds every V_c on the window by at
+least 8e-7 m/s. Last column: lower bound of the pocket entry speed of
+the slowest ball (b18, the paper's ball 19).
+
+| V0 offset | result | pieces | min pocket entry speed (m/s) |
+|---|---|---|---|
+| [-2.35, -2.3] | CERTIFIED | 25 (of 49 tried) | 0.135431 |
+| [-2.4, -2.35] | CERTIFIED | 25 (of 49 tried) | 0.119554 |
+| [-2.45, -2.4] | CERTIFIED | 25 (of 49 tried) | 0.101323 |
+| [-2.5, -2.45] | CERTIFIED | 25 (of 49 tried) | 0.0791247 |
+| [-2.55, -2.5] | CERTIFIED | 25 (of 49 tried) | 0.0477108 |
+| [-2.575, -2.55] | CERTIFIED | 25 (of 49 tried) | 0.0170906 |
+| [-2.578, -2.575] | CERTIFIED | 25 (of 49 tried) | 0.00737133 |
+| [-2.5786, -2.578] | CERTIFIED | 25 (of 49 tried) | 0.00260683 |
+| [-2.57868, -2.5786] | CERTIFIED | 25 (of 49 tried) | 0.000676002 |
+| [-2.578685, -2.57868] | CERTIFIED | 25 (of 49 tried) | 0.000246617 |

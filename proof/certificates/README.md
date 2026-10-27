@@ -77,3 +77,35 @@ narrowest, near the two edges, 4.6e-46.
 Together with `miss/miss_plus_9.0455e-43.txt` and
 `miss/miss_minus_4.3587e-44.txt`, this pins the window of directions
 to five significant figures: its width is 9.4813e-43 rad.
+
+## The lower edge of the ribbon
+
+Along a fixed skeleton the squared speed of every ball is an affine
+function of V0^2: v^2 = alpha V0^2 - beta - 2 a s (alpha, beta depend on
+the direction only). A stroke can realise the event list only if every
+ball is still moving at the end of each of its pieces, i.e. only if
+V0 > V_c(phi) = sqrt(max (beta + 2 a ell)/alpha). `certify_lower.py`
+propagates alpha and beta in the centred forms of `certify_window.py`
+and encloses V_c; `lower/` holds its outputs.
+
+| file | result |
+|---|---|
+| `lower/window.txt` | over phi* + [-4.3586e-44, 9.0454e-43] (400 bits, 25 pieces): V_c in [9.3203575, 9.3213142] m/s; the critical piece is everywhere the last piece of b18 (ball 19), from the left cushion to the corner pocket (0, 0) |
+| `lower/point.txt` | over phi* +/- 1e-90 (1200 bits): V_c(phi*) = 9.32127016844677 m/s (V_c^2 = 86.8860775531756) |
+
+The certified rectangle was then extended down to the edge:
+
+- `window/sub_-2.35_-2.3.txt` ... `window/sub_-2.578685_-2.57868.txt`:
+  ten sub-strips covering V0 in V0* + [-2.578685, -2.3], i.e.
+  [9.321315, 9.6] m/s, over the whole window (see `window/SUMMARY.md`).
+  Together with the 48 earlier sub-strips: every stroke with V0 in
+  [9.321315, 12] and phi in the window realises the event list.
+- `strip/edge_-2.5787298305_-2.578685.txt`: `certify_strip.py` at
+  400 bits on V0 in [9.3212701695, 9.321315], phi* +/- 1e-90. Its lower
+  end is 1.05e-9 m/s above V_c(phi*); b18 enters its pocket at about
+  1e-5 m/s there.
+
+So for every direction in the window the ribbon's speeds are contained
+in (V_c(phi), 12] and contain [9.321315, 12]; at phi* the edge is
+located to within 1.1e-9 m/s. The measure bound of the success set
+improves to (12 - 9.321315) * 9.48126e-43 > 2.53e-42.
