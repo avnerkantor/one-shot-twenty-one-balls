@@ -54,3 +54,26 @@ rebounds from the cushion inside the pocket jaws and may still drop.
 Boxes wider than about 1e-80 in direction are undecided for the same
 reason that stops `certify_mpmath.py` at 1e-85: a box loses far more
 width through twenty thin cuts than the dynamics amplifies.
+
+## The whole window
+
+`window/` holds the certificates of the rectangle
+V0 in V0* + [-2.3, +0.1] (which covers [V0* - 2.3, V_max]) times
+phi in phi* + [-4.3586e-44, 9.0454e-43], produced by `certify_window.py`
+at 400 bits: 48 sub-strips of width 0.05 m/s, each covered by an
+adaptive bisection of the window into 25 pieces, the same
+pieces for every sub-strip since the geometry does not depend on the
+speed (see
+`window/SUMMARY.md`). Every stroke in the rectangle realises the
+witness's event list and pots all 21.
+
+Why this works where boxes do not: the geometry is built in first-order
+centred forms in phi, so the enclosure width is proportional to the
+true sensitivity (about 3e40 m/rad) rather than to the box method's
+dependency loss (about 1e80 m/rad). Pieces about 1e-43 wide are
+decided in a few seconds; the widest piece is 1.2e-43 wide and the
+narrowest, near the two edges, 4.6e-46.
+
+Together with `miss/miss_plus_9.0455e-43.txt` and
+`miss/miss_minus_4.3587e-44.txt`, this pins the window of directions
+to five significant figures: its width is 9.4813e-43 rad.
