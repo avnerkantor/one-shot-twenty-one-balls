@@ -1,15 +1,20 @@
 cff-version: 1.2.0
 message: "If you use this software or its results, please cite it as below."
-title: "One Shot, Twenty-One Balls: Existence and Rarity of a Total Clearance in a Single Stroke of Snooker"
+title: "One Shot, Twenty-One Balls: A Computer-Assisted Proof of a Single-Stroke Total Clearance in an Idealized Model of Snooker"
 abstract: >-
   Snooker folklore holds that no single stroke can pocket all twenty-one
-  object balls. In a fully specified model of billiard dynamics we exhibit
-  an explicit configuration and cue stroke that pockets all twenty-one,
-  prove the set of successful strokes has positive Lebesgue measure,
-  conjecture the same for the regulation opening break, and estimate by
-  Monte Carlo the exponentially small probability of a total clearance.
-  The folk claim is right in practice and wrong in principle; the gap is
-  the distance between measure zero and unobservably small.
+  object balls. In an explicit model of billiard dynamics we exhibit a
+  configuration and a cue stroke that pocket all twenty-one, and prove in
+  interval arithmetic that every stroke in a box around it does too, so
+  the set of successful strokes has positive Lebesgue measure. The
+  successful strokes form a ribbon: every speed from 9.3213 to 12 m/s
+  works, while the window of directions is 9.4813e-43 radians wide, both
+  figures certified. The lower edge in speed is located exactly, where the
+  slowest ball comes to rest at the lip of its pocket. The strokes with a
+  given list of events form a semialgebraic set. For the regulation
+  opening position we state the corresponding conjecture, and show that a
+  finite certified search would settle it positively. The repository also
+  holds the Monte Carlo experiments of the companion expository article.
 type: software
 authors:
   - family-names: Kantor
@@ -22,6 +27,8 @@ keywords:
   - snooker
   - dynamical systems
   - computer-assisted proof
+  - interval arithmetic
+  - semialgebraic sets
   - Monte Carlo
   - rare events
 # When available, add:

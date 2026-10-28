@@ -5,8 +5,9 @@
 Snooker folklore says no. This repository accompanies a short mathematics
 paper showing that, in a fully specified idealized model of billiard
 dynamics, the answer is *yes in principle* and *never in practice*. It
-contains a computer-assisted proof of the first half and the simulations
-behind the second.
+contains the computer-assisted proofs of the first half (a certified
+witness, the ribbon of successful strokes, its window of directions and
+its lower edge in speed) and the simulations behind the second.
 
 <p align="center">
   <img src="figures/witness_clearance.gif" width="720"
@@ -28,8 +29,9 @@ has positive measure.
 `[V0* - 2.3, V0* + 0.1]` (about 9.6 to 12 m/s, the top of the model's
 shot range) and direction within `1e-90` rad of `phi*` also pots all 21.
 Almost any strength works, but the aim has to be right to 90 decimal
-places. (80-digit replays put the true angular width below `1e-40`.)
-This follows from a geometric fact about this witness. Every collision
+places. (The true window of directions is certified below: it is
+`9.4813e-43` rad wide.) This follows from a geometric fact about this
+witness. Every collision
 is a moving ball striking a ball at rest, so every ball's path is the
 same polyline whatever the speed; only the timing changes.
 [`proof/certify_strip.py`](proof/certify_strip.py) proves that the
@@ -37,9 +39,39 @@ paths are as planned for the whole angle box. It also proves that no
 two balls are ever within one diameter of each other at the same
 instant for any speed in the range.
 
-The proof is a rigorous replay of the stroke in interval arithmetic,
-checked by two independent programs written against different
-interval libraries:
+**The window of directions.** The strokes that realise the witness's
+event list (the same 61 events, each ball's events in the same order)
+have directions in `phi* + [-4.3586e-44, 9.0454e-43]` rad, a window
+`9.4813e-43` rad wide to five significant figures, at every speed in
+the ribbon. [`proof/certify_window.py`](proof/certify_window.py)
+certifies the whole rectangle of speeds times directions using
+first-order centred forms in the direction, which the plain box method
+cannot do (boxes of half-width `1e-88` are already undecided), and
+[`proof/certify_miss.py`](proof/certify_miss.py) certifies that just
+outside the window, at `phi* + 9.0455e-43` and `phi* - 4.3587e-44`,
+ball 21 reaches a cushion line inside the pocket jaws before the pocket
+disk, at any speed.
+
+**The lower edge.** Along a fixed skeleton every squared speed is an
+affine function of `V0^2`, so the event list is lost exactly when the
+slowest ball comes to rest at the lip of its pocket, at a critical
+speed `V_c(phi)`. [`proof/certify_lower.py`](proof/certify_lower.py)
+encloses it: `V_c(phi*) = 9.32127016844677` m/s, and `V_c` lies in
+`[9.32036, 9.32131]` m/s across the window. The rectangle
+`[9.321315, 12]` m/s times the window is certified, and along `phi*`
+the ribbon is certified down to `9.3212701695` m/s, which is `1.05e-9`
+m/s above `V_c(phi*)`. The success set has Lebesgue measure at least
+`2.53e-42` (m/s times rad).
+[`analysis/first_order.py`](analysis/first_order.py) explains the size
+of the window by composing first-order transfer maps along the chain;
+the dominant factor per thin cut is `c*l/(2R cos(theta))`, between 17
+and 240 in this witness, and the composed maps reproduce the exact
+sensitivity of `3.184e40` m/rad to four figures.
+
+The box theorem is a rigorous replay of the stroke in interval
+arithmetic, checked by two independent programs written against
+different interval libraries (the ribbon, window and lower-edge
+certificates are single implementations built on mpmath):
 
 | | library | file |
 |---|---|---|
@@ -79,6 +111,20 @@ python proof/certify_arb.py --r 1e-90
 # the speed ribbon: one sub-strip (about 40 s); the 48 sub-strips covering
 # V0* + [-2.3, 0.1] are listed in proof/certificates/strip/SUMMARY.md
 CERT_PREC=400 python proof/certify_strip.py -0.05 0 1e-90
+
+# the window of directions: one speed interval of the rectangle (about 30 s);
+# the 58 intervals are listed in proof/certificates/window/SUMMARY.md
+CERT_PREC=400 python proof/certify_window.py 4.3586e-44 9.0454e-43 -0.05 0
+# the two certified misses just outside the window
+CERT_PREC=1200 python proof/certify_miss.py miss 9.0455e-43 1e-90
+CERT_PREC=1200 python proof/certify_miss.py miss -4.3587e-44 1e-90
+
+# the lower edge: V_c over the whole window, then at phi* alone
+CERT_PREC=400 python proof/certify_lower.py
+CERT_PREC=1200 python proof/certify_lower.py 1e-90 1e-90
+
+# the first-order (ray-transfer) analysis of the sensitivity
+CERT_PREC=400 python analysis/first_order.py
 ```
 
 Each run ends with `CERTIFIED` and exits with code 0, or prints
@@ -109,7 +155,11 @@ proof/          the rigorous part
   certify_mpmath.py   certifier 1
   certify_arb.py      certifier 2
   certify_strip.py    the speed-ribbon certificate
-  certificates/       saved outputs (box_search/: wider boxes tried)
+  certify_window.py   the window of directions, in centred forms
+  certify_miss.py     the certified misses just outside the window
+  certify_lower.py    the lower edge of the ribbon in speed
+  certificates/       saved outputs (box_search/, strip/, window/, miss/, lower/)
+analysis/       first_order.py: the ray-transfer analysis of the sensitivity
 construction/   how the witness was found
   witness_bv.py       build-and-verify constructor (grows the chain ball by ball)
   witness_bv_exact.py runs it in the 80-digit engine
@@ -164,5 +214,7 @@ to 10^-13, about the same as the break.
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff). Note that the arXiv preprint
-(arXiv:2607.12995, v1) describes the earlier double-precision witness.
+See [`CITATION.cff`](CITATION.cff). Note that version 1 of the arXiv
+preprint (arXiv:2607.12995) describes the earlier double-precision
+witness; version 2 describes the certified witness and the theorems
+listed above.

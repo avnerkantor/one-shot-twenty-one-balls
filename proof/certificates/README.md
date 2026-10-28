@@ -6,7 +6,7 @@
 | `mpmath_box1e-90.txt` | `certify_mpmath.py`, 1200 bits | 1e-90 | CERTIFIED |
 | `arb_point.txt` | `certify_arb.py`, 1200 bits | 0 | CERTIFIED |
 | `arb_box1e-90.txt` | `certify_arb.py`, 1200 bits | 1e-90 | CERTIFIED |
-| `box_search/` | `certify_mpmath.py` | 1e-110 to 1e-85 | certified down to 1e-95; 1e-85 fails (enclosures too wide) |
+| `box_search/` | `certify_mpmath.py` | 1e-110 to 1e-84 | certified at 1e-110, 1e-100 and 1e-95 (and 1e-90 above); 1e-88, 1e-86, 1e-85 and 1e-84 fail (enclosures too wide; the 1e-88, 1e-86 and 1e-84 runs keep V0 at +/- 1e-90) |
 
 Both certifiers report the same 61 events (21 collisions, 19 cushion
 rebounds, 21 pocketings) in the same order, with the same margins:
@@ -51,9 +51,9 @@ A miss holds for every speed, because in this witness the geometry of
 the paths depends on the direction alone. A miss is not a proof that
 fewer than 21 balls are pocketed: just outside the window `b20`
 rebounds from the cushion inside the pocket jaws and may still drop.
-Boxes wider than about 1e-80 in direction are undecided for the same
-reason that stops `certify_mpmath.py` at 1e-85: a box loses far more
-width through twenty thin cuts than the dynamics amplifies.
+Wide boxes of directions are undecided for the same reason that stops
+`certify_mpmath.py` at half-width 1e-88: a box loses far more width
+through twenty thin cuts than the dynamics amplifies.
 
 ## The whole window
 
