@@ -61,7 +61,7 @@ class Miss(Exception):
 def exact(x):
     """Exact description of an mpf: mantissa * 2^exponent."""
     x = mp.mpf(x)
-    return f"{x.man}*2^{x.exp}" if x.man else "0"
+    return f"{'-' if x < 0 else ''}{x.man}*2^{x.exp}" if x.man else "0"
 
 
 # ----------------------------------------------------------- targets
@@ -257,7 +257,7 @@ def scan(w, plan_t):
                 break
             if st == "UNDECIDED":
                 raise Fail(f"side {name}: {outer} undecided: {why}")
-            outer *= 10
+            outer *= 10 if outer < mp.mpf("1e-6") else 2     # finer steps once the window may be wide
             if outer > 1:
                 raise Fail(f"side {name}: no miss found")
         for _ in range(400):
@@ -329,7 +329,7 @@ def certify_point(w, plan, plan_t, delta, dV):
 
 
 def main():
-    w = json.load(open(os.path.join(S.HERE, "witness_21.json")))
+    w = json.load(open(os.environ.get("CERT_WITNESS", os.path.join(S.HERE, "witness_21.json"))))
     args = sys.argv[1:]
     if not args:
         print(__doc__)

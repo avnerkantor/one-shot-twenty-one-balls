@@ -61,7 +61,7 @@ def critical(pieces):
 
 
 def main():
-    w = json.load(open(os.path.join(S.HERE, "witness_21.json")))
+    w = json.load(open(os.environ.get("CERT_WITNESS", os.path.join(S.HERE, "witness_21.json"))))
     args = sys.argv[1:]
     dminus = mp.mpf(args[0] if len(args) > 0 else "4.3586e-44")
     dplus = mp.mpf(args[1] if len(args) > 1 else "9.0454e-43")

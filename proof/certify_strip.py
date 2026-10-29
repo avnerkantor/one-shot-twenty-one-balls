@@ -191,9 +191,25 @@ def check_single(pc, s, ignore_wall=None, ignore_pocket=None):
     for k, Q in enumerate(POCKETS):
         if k == ignore_pocket:
             continue
-        d = first_contact(pc.P, pc.u, Q, RHO)
+        try:
+            d = first_contact(pc.P, pc.u, Q, RHO)
+        except Fail as exc:
+            if "tangential" in str(exc) and passes_beyond(pc.P, pc.u, Q, RHO, s):
+                continue                    # the near-tangent lies beyond the end of the piece
+            raise Fail(f"{pc.ball}: pocket {POCKET_NAMES[k]}: {exc}")
         if d is not None and not pos(d - s):
             raise Fail(f"{pc.ball}: pocket {POCKET_NAMES[k]} may come first")
+
+
+def passes_beyond(P, u, Q, rad, s):
+    """True if any entry of the ray P + t u into the disk of radius rad about
+    Q provably happens at arc length t > s: the entry, if any, is at
+    t = -b - sqrt(disc) >= -b - sqrt(max(disc, 0))."""
+    d = (P[0] - Q[0], P[1] - Q[1])
+    b = d[0] * u[0] + d[1] * u[1]
+    disc = b * b - (d[0] * d[0] + d[1] * d[1] - rad * rad)
+    root = iv.sqrt(iv.mpf([0, max(hi(disc), 0)]))
+    return pos(-b - root - s)
 
 
 def build(w, V, PHI, plan):
@@ -216,7 +232,10 @@ def build(w, V, PHI, plan):
             pm, pr = cur[mover], cur[rest]
             if pm.kind != "move" or pr.kind != "rest":
                 raise Fail(f"event {ev_i}: not a moving-onto-resting collision")
-            s = first_contact(pm.P, pm.u, pr.P, 2 * R)
+            try:
+                s = first_contact(pm.P, pm.u, pr.P, 2 * R)
+            except Fail as exc:
+                raise Fail(f"event {ev_i} ({mover} onto {rest}): {exc}")
             if s is None:
                 raise Fail(f"event {ev_i}: planned contact does not occur")
             check_single(pm, s)
@@ -265,14 +284,21 @@ def build(w, V, PHI, plan):
             cur[pc.ball] = np_
         else:                                        # pocket
             pc = cur[ev[1]]
-            best = None
+            best, undecided = None, []
             for k, Q in enumerate(POCKETS):
-                d = first_contact(pc.P, pc.u, Q, RHO)
+                try:
+                    d = first_contact(pc.P, pc.u, Q, RHO)
+                except Fail as exc:
+                    undecided.append((k, Q, exc))      # a near-tangent: harmless if far beyond
+                    continue
                 if d is not None and (best is None or hi(d) < hi(best[1])):
                     best = (k, d)
             if best is None:
                 raise Fail(f"event {ev_i}: no pocket ahead")
             k, s = best
+            for k2, Q, exc in undecided:
+                if not passes_beyond(pc.P, pc.u, Q, RHO, s):
+                    raise Fail(f"event {ev_i} ({pc.ball}): pocket {POCKET_NAMES[k2]}: {exc}")
             check_single(pc, s, ignore_pocket=k)
             end_piece(pc, s, ev_i)
             cur[pc.ball] = None
@@ -465,7 +491,7 @@ def check_admissible(w):
 
 
 def main():
-    path = os.path.join(HERE, "witness_21.json")
+    path = os.environ.get("CERT_WITNESS", os.path.join(HERE, "witness_21.json"))
     args = sys.argv[1:]
     if len(args) == 3:          # sub-strip: V0* + [a, b], phi* +/- dphi
         a, b, dphi = args

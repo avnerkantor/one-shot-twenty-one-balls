@@ -120,6 +120,29 @@ class CF:
         sc = iv.sqrt(self.c)
         return CF(sc, self.D / (iv.sqrt(rng) + sc))
 
+    @classmethod
+    def set_piece(cls, h):
+        cls.T = iv.mpf([-h, h])
+
+    @classmethod
+    def cos_sin(cls, phic):
+        """Forms of cos(phic + t) and sin(phic + t) over the piece."""
+        phic_iv = iv.mpf(phic)
+        PHI = phic_iv + cls.T
+        return CF(iv.cos(phic_iv), -iv.sin(PHI)), CF(iv.sin(phic_iv), iv.cos(PHI))
+
+
+# With CERT_TM_DEGREE=N (N >= 2) the geometry is carried in Taylor models
+# of degree N instead of first-order centred forms (taylor_models.py);
+# the two classes share the interface used below. Needed when the slopes
+# computed in intervals inflate along a chain of near-frozen collisions.
+TM_DEGREE = int(os.environ.get("CERT_TM_DEGREE", "0"))
+if TM_DEGREE:
+    import taylor_models as _TM  # noqa: E402
+    _TM.Fail = Fail
+    _TM.TM.N = TM_DEGREE
+    CF = _TM.TM  # noqa: F811
+
 
 def posr(x):
     return pos(x.range())
@@ -207,9 +230,24 @@ def check_single(pc, s, ignore_wall=None, ignore_pocket=None):
     for k, Q in enumerate(S.POCKETS):
         if k == ignore_pocket:
             continue
-        d = first_contact(pc.P, pc.u, Q, RHO)
+        try:
+            d = first_contact(pc.P, pc.u, Q, RHO)
+        except Fail as exc:
+            if "tangential" in str(exc) and passes_beyond(pc.P, pc.u, Q, RHO, sr):
+                continue                    # the near-tangent lies beyond the end of the piece
+            raise Fail(f"{pc.ball}: pocket {S.POCKET_NAMES[k]}: {exc}")
         if d is not None and not pos(d.range() - sr):
             raise Fail(f"{pc.ball}: pocket {S.POCKET_NAMES[k]} may come first")
+
+
+def passes_beyond(P, u, Q, rad, sr):
+    """True if any entry of the ray into the disk of radius rad about Q
+    provably happens beyond the arc length range sr (centred-form inputs)."""
+    d = (P[0] - Q[0], P[1] - Q[1])
+    b = (d[0] * u[0] + d[1] * u[1]).range()
+    disc = b * b - (d[0] * d[0] + d[1] * d[1]).range() + rad * rad
+    root = iv.sqrt(iv.mpf([0, max(S.hi(disc), 0)]))
+    return pos(-b - root - sr)
 
 
 def reflect(pc, wall, s, event):
@@ -233,8 +271,7 @@ def build(w, V, phic, h, plan_t):
     speeds V (interval). plan_t carries the designated cushions and
     pockets. Returns what certify_strip.build returns, with geometry as
     centred forms."""
-    CF.T = iv.mpf([-h, h])
-    PHI = iv.mpf([phic - h, phic + h])
+    CF.set_piece(h)
     n = len(w["balls"])
     names = ["cue"] + [f"b{i}" for i in range(n)]
     pieces = {nm: [] for nm in names}
@@ -244,9 +281,8 @@ def build(w, V, phic, h, plan_t):
         pieces[nm].append(pc)
         cur[nm] = pc
     cue = cur["cue"]
-    phic_iv = iv.mpf(phic)
     cue.kind = "move"
-    cue.u = (CF(iv.cos(phic_iv), -iv.sin(PHI)), CF(iv.sin(phic_iv), iv.cos(PHI)))
+    cue.u = CF.cos_sin(phic)
     cue.v0 = V
     cue.al, cue.be = CF(1), CF(0)
     walls = {wl[0]: wl for wl in S.WALLS}
@@ -366,11 +402,15 @@ def certify_piece(w, V, phic, h, plan_t):
 # ------------------------------------------------------------ driver
 def exact(x):
     x = mp.mpf(x)
-    return f"{x.man}*2^{x.exp}" if x.man else "0"
+    return f"{'-' if x < 0 else ''}{x.man}*2^{x.exp}" if x.man else "0"
+
+
+VERBOSE = os.environ.get("CERT_VERBOSE") == "1"
 
 
 def main():
-    w = json.load(open(os.path.join(S.HERE, "witness_21.json")))
+    path = os.environ.get("CERT_WITNESS", os.path.join(S.HERE, "witness_21.json"))
+    w = json.load(open(path))
     args = sys.argv[1:]
     dminus = mp.mpf(args[0] if len(args) > 0 else "4.358e-44")
     dplus = mp.mpf(args[1] if len(args) > 1 else "9.045e-43")
@@ -381,7 +421,7 @@ def main():
         dV = mp.mpf(args[2] if len(args) > 2 else "0.01")
         va, vb = -dV, dV
         vlabel = f"V0 in V0* +/- {mp.nstr(dV, 6)}"
-    min_width = mp.mpf("1e-91")
+    min_width = mp.mpf(os.environ.get("CERT_MIN_WIDTH", "1e-91"))   # give up below this piece width
     S.check_admissible(w)
     import certify_miss as M
     plan = S.plan_events(w)                  # proposal only
@@ -391,6 +431,8 @@ def main():
     print(f"window: phi* + [-{mp.nstr(dminus, 10)}, {mp.nstr(dplus, 10)}], "
           f"{vlabel}, {S.PREC} bits")
     print(f"  exact offsets: -{exact(dminus)}, +{exact(dplus)}")
+    rel = os.path.relpath(os.path.abspath(path), os.path.dirname(S.HERE)).replace(os.sep, "/")
+    print(f"  witness: {rel}" + (f", Taylor models of degree {TM_DEGREE}" if TM_DEGREE else ", first-order centred forms"))
     t0 = time.time()
     stack = [(-dminus, dplus)]
     done = []
@@ -400,9 +442,13 @@ def main():
         a, b = stack.pop()
         phic, h = phistar + (a + b) / 2, (b - a) / 2
         n_try += 1
+        t1 = time.time()
         try:
             potted, n_pairs, n_time = certify_piece(w, V, phic, h, plan_t)
         except Fail as exc:
+            if VERBOSE:
+                print(f"  piece [{mp.nstr(a, 8)}, {mp.nstr(b, 8)}] width {mp.nstr(b - a, 4)}: "
+                      f"FAIL after {time.time() - t1:.1f} s: {exc}", flush=True)
             if b - a < min_width:
                 print(f"\nNOT CERTIFIED: piece [{mp.nstr(a, 12)}, {mp.nstr(b, 12)}] "
                       f"below minimum width: {exc}")
@@ -413,6 +459,9 @@ def main():
         v = min(lo(p[3]) for p in potted)
         min_pot = v if min_pot is None else min(min_pot, v)
         done.append((a, b, n_time))
+        if VERBOSE:
+            print(f"  piece [{mp.nstr(a, 8)}, {mp.nstr(b, 8)}] width {mp.nstr(b - a, 4)}: "
+                  f"ok in {time.time() - t1:.1f} s ({n_time} timing pairs)", flush=True)
         if len(done) % 20 == 0:
             print(f"  {len(done)} pieces certified, {len(stack)} pending, "
                   f"{time.time() - t0:.0f} s", flush=True)

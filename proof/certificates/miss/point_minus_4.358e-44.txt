@@ -1,7 +1,7 @@
-direction: phi* + -4.358e-44 exactly (460941105918064543077191505985090590651550017337334008582799911968937670113255175*2^-412), V0 in V0* +/- 0.01, 1200 bits
+direction: phi* + -4.358e-44 exactly (-460941105918064543077191505985090590651550017337334008582799911968937670113255175*2^-412), V0 in V0* +/- 0.01, 1200 bits
   pockets as designated       : True
   piece pairs examined        : 2603 (40 needed timing)
   min pocket entry speed      : 0.443202 m/s
 
 CERTIFIED: every stroke with this direction and a speed in the range follows the event list and pockets all 21 balls.
-wall time: 0.9 s
+wall time: 2.1 s

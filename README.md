@@ -158,13 +158,18 @@ proof/          the rigorous part
   certify_window.py   the window of directions, in centred forms
   certify_miss.py     the certified misses just outside the window
   certify_lower.py    the lower edge of the ribbon in speed
-  certificates/       saved outputs (box_search/, strip/, window/, miss/, lower/)
+  taylor_models.py    degree-N Taylor models for certify_window.py (CERT_TM_DEGREE)
+  certificates/       saved outputs (box_search/, strip/, window/, miss/, lower/, cluster/)
 analysis/       first_order.py: the ray-transfer analysis of the sensitivity
 construction/   how the witness was found
   witness_bv.py       build-and-verify constructor (grows the chain ball by ball)
   witness_bv_exact.py runs it in the 80-digit engine
   other_chains/       two more 21-ball chains it found (not certified)
   bv_robust_3ball.json  a short chain with a visibly fat success set
+  witness_tree.py     tree-shaped clearances: carriers strike a few balls each (open problem P4)
+  witness_cluster.py  the near-frozen cluster variant: children sit 1.5 to 3 mm from their carrier
+  tree_measure.py     replays a tree in the 80-digit engine and brackets its window of directions
+  cluster_21.json     the 21-ball cluster whose window is certified in proof/certificates/cluster/
 simulation/     how rare is rare: Monte Carlo experiments
   mc_break.py, mc_results.json, mc_sensitivity.json, fit_summary.txt
                       strokes from the opening break
