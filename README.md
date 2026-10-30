@@ -1,5 +1,7 @@
 # One Shot, Twenty-One Balls
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23816267.svg)](https://doi.org/10.5281/zenodo.23816267)
+
 **Can a single stroke of snooker clear all twenty-one object balls?**
 
 Snooker folklore says no. This repository accompanies a short mathematics
@@ -219,7 +221,9 @@ to 10^-13, about the same as the break.
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff). Note that version 1 of the arXiv
+See [`CITATION.cff`](CITATION.cff). Release v2.0 of this repository is
+archived on Zenodo as [doi:10.5281/zenodo.23816267](https://doi.org/10.5281/zenodo.23816267).
+Note that version 1 of the arXiv
 preprint (arXiv:2607.12995) describes the earlier double-precision
 witness; version 2 describes the certified witness and the theorems
 listed above.
