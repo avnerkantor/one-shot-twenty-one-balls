@@ -112,20 +112,37 @@ improves to (12 - 9.321315) * 9.48126e-43 > 2.53e-42.
 
 ## The near-frozen cluster (open problem P4)
 
-`cluster/window.txt` certifies a second clearance of Model M,
+The ten files in `cluster/` certify a second clearance of Model M,
 `construction/cluster_21.json`: the cue ball strikes twelve balls
 directly, over legs of 1.5 mm to 0.54 m, and the other nine are struck
 by object balls struck before them, four of them by a neighbour that
 has rolled 1.5 mm and five by a ball that has rolled 0.09 to 0.46 m
 (see `construction/witness_cluster.py`). The event list has 57 events:
 21 ball-ball collisions, 15 cushion rebounds and 21 pocketings. The
-run is
+rectangle of strokes is certified one speed interval of depth 0.001 m/s
+at a time. The first run is
 
     CERT_WITNESS=construction/cluster_21.json CERT_PREC=400 CERT_TM_DEGREE=6     CERT_MIN_WIDTH=1e-7 python proof/certify_window.py 2.5e-5 9.15e-4 -0.001 0
 
 | file | result |
 |---|---|
 | `cluster/window.txt` | CERTIFIED: every stroke with phi in phi_c + [-2.5e-5, 9.15e-4] and V0 in [V0_c - 0.001, V0_c] realises the cluster's 57 events and pockets all 21 object balls; 64 pieces of width 1.469e-5 rad, 400 bits, Taylor models of degree 6; the slowest pocket entry is at 0.250018 m/s or more |
+| `cluster/sub_-0.002_-0.001.txt` | CERTIFIED: the same for V0 in [V0_c - 0.002, V0_c - 0.001]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.249892 m/s or more |
+| `cluster/sub_-0.003_-0.002.txt` | CERTIFIED: the same for V0 in [V0_c - 0.003, V0_c - 0.002]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.249766 m/s or more |
+| `cluster/sub_-0.004_-0.003.txt` | CERTIFIED: the same for V0 in [V0_c - 0.004, V0_c - 0.003]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.24964 m/s or more |
+| `cluster/sub_-0.005_-0.004.txt` | CERTIFIED: the same for V0 in [V0_c - 0.005, V0_c - 0.004]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.249513 m/s or more |
+| `cluster/sub_-0.006_-0.005.txt` | CERTIFIED: the same for V0 in [V0_c - 0.006, V0_c - 0.005]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.249387 m/s or more |
+| `cluster/sub_-0.007_-0.006.txt` | CERTIFIED: the same for V0 in [V0_c - 0.007, V0_c - 0.006]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.249261 m/s or more |
+| `cluster/sub_-0.008_-0.007.txt` | CERTIFIED: the same for V0 in [V0_c - 0.008, V0_c - 0.007]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.249135 m/s or more |
+| `cluster/sub_-0.009_-0.008.txt` | CERTIFIED: the same for V0 in [V0_c - 0.009, V0_c - 0.008]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.249008 m/s or more |
+| `cluster/sub_-0.010_-0.009.txt` | CERTIFIED: the same for V0 in [V0_c - 0.010, V0_c - 0.009]; 64 pieces of width 1.469e-5 rad; the slowest pocket entry is at 0.248882 m/s or more |
+
+The other nine runs have the last two arguments `-0.002 -0.001` down to
+`-0.010 -0.009`. Adjacent runs share the same binary endpoint, so the
+union of the ten is the rectangle phi_c + [-2.5e-5, 9.15e-4] by
+[V0_c - 0.01, V0_c], with every pocket entry at 0.248882 m/s or more.
+The first run took 1625 s alone. The other nine were made concurrently
+on one machine and their wall times, about 12000 s each, reflect that.
 
 Why Taylor models: along a chain of near-frozen collisions the true
 slope of every quantity with respect to the aim stays of order 1 to
@@ -144,7 +161,12 @@ The certified rectangle is 9.4e-4 rad wide in direction, against
 80-digit replay (`construction/tree_measure.py`) brackets the window at
 phi_c + [-4.24e-5, 9.22e-4], and within about 1.5e-5 rad of either
 edge the time-separation check of `certify_strip.py` cannot decide one
-near pass. The speed range is narrow for the same reason: on four legs
-the cue passes the ball it will strike next with 0.09 to 0.63 mm of
-clearance, and the position enclosures grow with the speed range.
-Nothing is claimed about the window's edges or about wider speeds.
+near pass. The speed intervals are shallow for the same reason: on
+four legs the cue passes the ball it will strike next with 0.09 to
+0.63 mm of clearance, and the position enclosures grow with the speed
+range. On the interval [V0_c - 0.01, V0_c] taken whole the run gives
+up (`cluster/whole_-0.010_0_fails.txt`, with `CERT_MIN_WIDTH=4e-6`): on
+pieces from 5.9e-5 down to 3.7e-6 rad wide the same check fails to
+separate the cue ball from ball b11, which it passes on the way to
+b10. This is why the rectangle is certified as ten intervals. Nothing
+is claimed about the window's edges or about speeds below V0_c - 0.01.

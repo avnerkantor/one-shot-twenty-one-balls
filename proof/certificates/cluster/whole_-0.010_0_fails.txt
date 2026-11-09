@@ -1,0 +1,14 @@
+window: phi* + [-2.5e-5, 0.000915], V0 in V0* + [-0.010, 0], 400 bits
+  exact offsets: -777067556890291628367784762729407562656962735620855808500724963895561714082083399*2^-284, +111096377274158881243206727796469987473612641108294228871588022181943588810172861*2^-276
+  witness: construction/cluster_21.json, Taylor models of degree 6
+  piece [-2.5e-5, 0.000915] width 0.00094: FAIL after 20.6 s: event 16: not approaching
+  piece [-2.5e-5, 0.000445] width 0.00047: FAIL after 25.0 s: tangential contact cannot be excluded
+  piece [-2.5e-5, 0.00021] width 0.000235: FAIL after 44.5 s: cue: pocket C-br: tangential contact cannot be excluded
+  piece [-2.5e-5, 9.25e-5] width 0.0001175: FAIL after 52.3 s: cue: pocket M-b: tangential contact cannot be excluded
+  piece [-2.5e-5, 3.375e-5] width 5.875e-5: FAIL after 56.1 s: cannot separate cue (from event 4) and b11 (from event 0) in time
+  piece [-2.5e-5, 4.375e-6] width 2.937e-5: FAIL after 63.6 s: cannot separate cue (from event 4) and b11 (from event 0) in time
+  piece [-2.5e-5, -1.03125e-5] width 1.469e-5: FAIL after 53.3 s: cannot separate cue (from event 4) and b11 (from event 0) in time
+  piece [-2.5e-5, -1.765625e-5] width 7.344e-6: FAIL after 50.6 s: cannot separate cue (from event 4) and b11 (from event 0) in time
+  piece [-2.5e-5, -2.1328125e-5] width 3.672e-6: FAIL after 53.2 s: cannot separate cue (from event 4) and b11 (from event 0) in time
+
+NOT CERTIFIED: piece [-2.5e-5, -2.1328125e-5] below minimum width: cannot separate cue (from event 4) and b11 (from event 0) in time
