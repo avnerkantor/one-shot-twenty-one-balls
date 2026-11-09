@@ -169,7 +169,8 @@ construction/   how the witness was found
   other_chains/       two more 21-ball chains it found (not certified)
   bv_robust_3ball.json  a short chain with a visibly fat success set
   witness_tree.py     tree-shaped clearances: carriers strike a few balls each (open problem P4)
-  witness_cluster.py  the near-frozen cluster variant: children sit 1.5 to 3 mm from their carrier
+  witness_cluster.py  the cluster variant: children sit 1.5 to 3 mm from their carrier,
+                      except a carrier's last child, which may sit up to 0.6 m along its path
   tree_measure.py     replays a tree in the 80-digit engine and brackets its window of directions
   cluster_21.json     the 21-ball cluster whose window is certified in proof/certificates/cluster/
 simulation/     how rare is rare: Monte Carlo experiments

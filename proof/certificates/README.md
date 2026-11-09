@@ -113,16 +113,19 @@ improves to (12 - 9.321315) * 9.48126e-43 > 2.53e-42.
 ## The near-frozen cluster (open problem P4)
 
 `cluster/window.txt` certifies a second clearance of Model M,
-`construction/cluster_21.json`: the cue ball strikes twelve entry balls
-over short legs and the other nine balls are struck by their neighbours
-across gaps of 1.5 to 3 mm (see `construction/witness_cluster.py`). The
+`construction/cluster_21.json`: the cue ball strikes twelve balls
+directly, over legs of 1.5 mm to 0.54 m, and the other nine are struck
+by object balls struck before them, four of them by a neighbour that
+has rolled 1.5 mm and five by a ball that has rolled 0.09 to 0.46 m
+(see `construction/witness_cluster.py`). The event list has 57 events:
+21 ball-ball collisions, 15 cushion rebounds and 21 pocketings. The
 run is
 
     CERT_WITNESS=construction/cluster_21.json CERT_PREC=400 CERT_TM_DEGREE=6     CERT_MIN_WIDTH=1e-7 python proof/certify_window.py 2.5e-5 9.15e-4 -0.001 0
 
 | file | result |
 |---|---|
-| `cluster/window.txt` | CERTIFIED: every stroke with phi in phi_c + [-2.5e-5, 9.15e-4] and V0 in [V0_c - 0.001, V0_c] realises the cluster's 61 events and pockets all 21 object balls; 64 pieces of width 1.469e-5 rad, 400 bits, Taylor models of degree 6; the slowest pocket entry is at 0.250018 m/s or more |
+| `cluster/window.txt` | CERTIFIED: every stroke with phi in phi_c + [-2.5e-5, 9.15e-4] and V0 in [V0_c - 0.001, V0_c] realises the cluster's 57 events and pockets all 21 object balls; 64 pieces of width 1.469e-5 rad, 400 bits, Taylor models of degree 6; the slowest pocket entry is at 0.250018 m/s or more |
 
 Why Taylor models: along a chain of near-frozen collisions the true
 slope of every quantity with respect to the aim stays of order 1 to

@@ -1,0 +1,32 @@
+event  ball  cut angle  next leg (m)  A = c l/(2R cos)
+    1    b0     83.145       0.17707            27.553
+    2    b1     82.432        1.5963             225.1
+    3    b2      82.26        0.1216            16.767
+    4    b3     76.445        1.7503            138.68
+    7    b4      82.65         1.655            240.25
+   10    b5     82.823       0.11932            17.737
+   11    b6     76.288        1.7232            135.01
+   15    b7     81.187        1.5934            193.16
+   19    b8     79.743        1.4294            149.08
+   22    b9     81.947        0.9587            127.09
+   25   b10     77.399        1.3003            110.69
+   28   b11     72.018        3.6944            222.24
+   33   b12     82.005       0.27959             37.33
+   36   b13     81.149        1.3737            165.81
+   40   b14      81.35        1.4076            173.82
+   42   b15      76.59        0.8581            68.716
+   45   b16     83.972       0.35638            63.025
+   46   b17      79.38       0.37382             37.67
+   48   b18      80.05       0.76749            82.494
+   49   b19     81.937       0.47015             62.25
+   53   b20      3.358 (ball 21 to pocket)            36.172
+
+cut angles of the first 20 collisions: 72.02 to 83.97 deg
+|dpsi/dtheta| / c over them           : 0.9973 to 0.99971
+dominant factors A                   : 16.77 to 240.2, median 118.9, product 6.733e+38
+stroke to first contact              : 1.1241 m
+ball 21 path to pocket               : 1.8958 m, last factor 36.172
+product of dominant terms            : 2.738e+40 m/rad
+full first-order chain               : 3.18405e+40 m/rad
+exact derivative (centred forms)     : 3.18439e+40 m/rad
+ratio chain / exact                  : 0.999894
