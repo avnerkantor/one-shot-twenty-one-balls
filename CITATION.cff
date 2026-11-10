@@ -31,6 +31,7 @@ keywords:
   - semialgebraic sets
   - Monte Carlo
   - rare events
-version: v2.0
-doi: 10.5281/zenodo.23816267
+version: v2.1
+# The Zenodo DOI of release v2.1 is added here once the release is archived.
+# Release v2.0 is archived as doi:10.5281/zenodo.23816267.
 repository-code: "https://github.com/avnerkantor/one-shot-twenty-one-balls"
