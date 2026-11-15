@@ -45,11 +45,14 @@ Run:  python proof/certify_strip.py [dV] [dphi]      e.g. 0.01 1e-90
       python proof/certify_strip.py a b dphi         V0 in V0* + [a, b]
 """
 import json
+import math
 import os
 import sys
 import time
+from fractions import Fraction
 
 from mpmath import iv, mp
+from mpmath.libmp import to_rational
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "model"))
@@ -57,6 +60,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(HERE), "model"))
 PREC = int(os.environ.get("CERT_PREC", "1200"))
 iv.prec = PREC
 mp.prec = PREC
+# CERT_V_ABS=1: the two speed arguments are speeds in m/s, not offsets
+# from V0*. Used where a theorem states a decimal speed: V0* is a
+# binary64 number and is not exactly 11.9.
+V_ABS = os.environ.get("CERT_V_ABS") == "1"
 
 L = iv.mpf("3.569")
 W = iv.mpf("1.778")
@@ -80,11 +87,62 @@ def pos(x):
 
 
 def lo(x):
-    return mp.mpf(x.a)
+    """Lower endpoint of an interval as an mpf, copied without rounding.
+    (mp.mpf(x.a) would round it to the working precision of mp, to
+    nearest, which is not an enclosure.)"""
+    return mp.make_mpf(x._mpi_[0])
 
 
 def hi(x):
-    return mp.mpf(x.b)
+    """Upper endpoint of an interval as an mpf, copied without rounding."""
+    return mp.make_mpf(x._mpi_[1])
+
+
+def _dec(x, n, up):
+    """The mpf x in n significant digits, rounded down (up=False) or up
+    (up=True), never to nearest: a printed bound stays a bound."""
+    q = Fraction(*to_rational(x._mpf_))
+    if q == 0:
+        return "0"
+    neg, a = q < 0, abs(q)
+    e = len(str(a.numerator)) - len(str(a.denominator))
+    while a >= Fraction(10) ** (e + 1):
+        e += 1
+    while a < Fraction(10) ** e:
+        e -= 1
+    scaled = a / Fraction(10) ** (e - n + 1)        # in [10^(n-1), 10^n)
+    m = math.ceil(scaled) if up != neg else math.floor(scaled)
+    if m == 10 ** n:
+        m, e = m // 10, e + 1
+    digits = str(m).rstrip("0") or "0"
+    sign = "-" if neg else ""
+    if -5 <= e < 0:
+        return sign + "0." + "0" * (-e - 1) + digits
+    if 0 <= e < 16:
+        digits = digits.ljust(e + 1, "0")
+        frac = digits[e + 1:]
+        return sign + digits[:e + 1] + ("." + frac if frac else "")
+    return sign + digits[0] + ("." + digits[1:] if len(digits) > 1 else "") + f"e{e}"
+
+
+def dn(x, n):
+    """A lower bound, printed rounded down."""
+    return _dec(x, n, False)
+
+
+def up(x, n):
+    """An upper bound, printed rounded up."""
+    return _dec(x, n, True)
+
+
+def check_precision():
+    """Both mpmath contexts must be at the precision of the certificate.
+    The 80-digit engine sets mp.dps when it is imported; plan_events
+    restores the precision, and this guard stops a run if anything else
+    has changed it."""
+    if mp.prec != PREC or iv.prec != PREC:
+        raise RuntimeError(f"precision mismatch: mp at {mp.prec} bits, iv at "
+                           f"{iv.prec} bits, certificate at {PREC} bits")
 
 
 def hull(a, b):
@@ -94,25 +152,70 @@ def hull(a, b):
 # ---------------------------------------------------------------- plan
 def plan_events(w):
     """Event list of the centre stroke from the 80-digit engine
-    (heuristic input only)."""
-    import model_sim_mp as M
-    balls = [M.Ball(*w["cue"], "cue")] + [M.Ball(p[0], p[1], f"b{i}")
-                                         for i, p in enumerate(w["balls"])]
-    M.shoot(balls[0], w["v0"], w["phi"])
-    s = M.Simulator(balls, record_events=True)
-    n_obj = len(w["balls"])
-    out, potted = [], 0
-    while potted < n_obj and s.step():
-        t, kind, who, extra = s.events[-1]
-        if kind == "bb":
-            out.append(("bb",) + tuple(who))
-        elif kind == "cushion":
-            out.append(("wall", who))
-        elif kind == "pocket":
-            out.append(("pocket", who))
-            if who != "cue":
-                potted += 1
+    (heuristic input only). The engine works at 80 digits and sets
+    mp.dps when it is imported, so the precision of mp is saved here and
+    restored before returning."""
+    prec0 = mp.prec
+    try:
+        import model_sim_mp as M
+        mp.dps = 80
+        balls = [M.Ball(*w["cue"], "cue")] + [M.Ball(p[0], p[1], f"b{i}")
+                                             for i, p in enumerate(w["balls"])]
+        M.shoot(balls[0], w["v0"], w["phi"])
+        s = M.Simulator(balls, record_events=True)
+        n_obj = len(w["balls"])
+        out, potted = [], 0
+        while potted < n_obj and s.step():
+            t, kind, who, extra = s.events[-1]
+            if kind == "bb":
+                out.append(("bb",) + tuple(who))
+            elif kind == "cushion":
+                out.append(("wall", who))
+            elif kind == "pocket":
+                out.append(("pocket", who))
+                if who != "cue":
+                    potted += 1
+    finally:
+        mp.prec = prec0
+    check_precision()
     return out
+
+
+# ---------------------------------------------------------------- tail
+# What the cue ball does after its last planned event is not part of the
+# plan: it may meet cushions and it comes to rest. build() follows it and
+# checks it against every other ball. For the report only, note_tail()
+# records whether these extra events can come before the last pocketing.
+TAIL = {}
+
+
+def note_tail(potted, wall_times, stop_time):
+    t_lo = max(lo(p[2]) for p in potted)   # no stroke has its last pocketing before this
+    t_hi = max(hi(p[2]) for p in potted)   # ... or after this
+
+    def when(T):
+        if hi(T) < t_lo:
+            return "before"
+        if lo(T) > t_hi:
+            return "after"
+        return "undecided"
+    TAIL.clear()
+    TAIL["walls"] = [when(T) for T in wall_times]
+    TAIL["stop"] = "after" if stop_time is None else when(stop_time)
+
+
+def tail_report(tails):
+    """One line for a list of TAIL records (one per certified piece)."""
+    walls = max(len([x for x in t["walls"] if x != "after"]) for t in tails)
+    stops = {t["stop"] for t in tails}
+    if stops == {"before"}:
+        st = "before the last pocketing, for every stroke"
+    elif stops == {"after"}:
+        st = "after the last pocketing, for every stroke"
+    else:
+        st = "before the last pocketing for some strokes at most (not decided)"
+    return (f"cushion contacts that may precede the last pocketing: "
+            f"{walls}; it comes to rest {st}")
 
 
 # ---------------------------------------------------------------- pieces
@@ -213,6 +316,7 @@ def passes_beyond(P, u, Q, rad, s):
 
 
 def build(w, V, PHI, plan):
+    check_precision()
     n = len(w["balls"])
     names = ["cue"] + [f"b{i}" for i in range(n)]
     pieces = {nm: [] for nm in names}
@@ -310,6 +414,7 @@ def build(w, V, PHI, plan):
     t_end = max(hi(p[2]) for p in potted)
     # extend the cue (the only ball left) until every stroke has finished
     pc = cur["cue"]
+    wall_times, stop_time = [], None
     while True:
         stop_s = pc.v0 * pc.v0 / (2 * A)          # arc length until it stops
         best = None
@@ -322,6 +427,7 @@ def build(w, V, PHI, plan):
             check_single(pc, stop_s)
             pc.ell, pc.v1, pc.e1 = stop_s, Z, "x"
             pc.t1 = pc.t0 + pc.v0 / A
+            stop_time = pc.t1
             if lo(pc.t1) <= t_end:
                 P = (pc.P[0] + stop_s * pc.u[0], pc.P[1] + stop_s * pc.u[1])
                 pieces["cue"].append(Piece("cue", "rest", P, pc.t1, "x"))
@@ -332,6 +438,7 @@ def build(w, V, PHI, plan):
         C = list(end_piece(pc, s, "x"))
         if lo(pc.t1) > t_end:
             break
+        wall_times.append(pc.t1)
         C[wall[1]] = wall[2]
         ux, uy = pc.u
         if wall[1] == 0:
@@ -343,6 +450,7 @@ def build(w, V, PHI, plan):
         np_.u, np_.v0 = (ux / f, uy / f), f * pc.v1
         pieces["cue"].append(np_)
         pc = np_
+    note_tail(potted, wall_times, stop_time)
     return pieces, same_start, designed, potted, t_end
 
 
@@ -434,6 +542,7 @@ def bbox(pc):
 
 
 def check_pairs(pieces, same_start, designed, t_end):
+    check_precision()
     skip = {(id(a), id(b)) for a, b in designed + same_start}
     skip |= {(id(b), id(a)) for a, b in designed + same_start}
     for a, b in same_start:
@@ -493,18 +602,24 @@ def check_admissible(w):
 def main():
     path = os.environ.get("CERT_WITNESS", os.path.join(HERE, "witness_21.json"))
     args = sys.argv[1:]
-    if len(args) == 3:          # sub-strip: V0* + [a, b], phi* +/- dphi
+    w = json.load(open(path))
+    if len(args) == 3 and V_ABS:    # V0 in [a, b] m/s, phi* +/- dphi
+        a, b, dphi = args
+        # decimal ends, rounded outward: the interval contains [a, b]
+        V = iv.mpf([lo(iv.mpf(a)), hi(iv.mpf(b))])
+        label = f"V0 in [{a}, {b}] m/s"
+    elif len(args) == 3:            # sub-strip: V0* + [a, b], phi* +/- dphi
         a, b, dphi = args
         offs = (lo(iv.mpf(a)), hi(iv.mpf(b)))
+        V = iv.mpf(w["v0"]) + iv.mpf([offs[0], offs[1]])
         label = f"V0 in V0* + [{a}, {b}]"
-    else:                       # symmetric: V0* +/- dV, phi* +/- dphi
+    else:                           # symmetric: V0* +/- dV, phi* +/- dphi
         dV = args[0] if args else "0.01"
         dphi = args[1] if len(args) > 1 else "1e-90"
         offs = (-hi(iv.mpf(dV)), hi(iv.mpf(dV)))
+        V = iv.mpf(w["v0"]) + iv.mpf([offs[0], offs[1]])
         label = f"V0 +/- {dV}"
-    w = json.load(open(path))
     rphi = hi(iv.mpf(dphi))
-    V = iv.mpf(w["v0"]) + iv.mpf([offs[0], offs[1]])
     PHI = iv.mpf(w["phi"]) + iv.mpf([-rphi, rphi])
     print(f"certifying strip: {label}, phi +/- {dphi}, {PREC} bits")
     t0 = time.time()
@@ -512,10 +627,12 @@ def main():
         check_admissible(w)
         plan = plan_events(w)
         pieces, same_start, designed, potted, t_end = build(w, V, PHI, plan)
+        tail = dict(TAIL)
         n_pairs, n_time = check_pairs(pieces, same_start, designed, t_end)
     except Fail as exc:
         print(f"NOT CERTIFIED: {exc}")
         return 1
+    check_precision()
     n_pieces = sum(len(p) for p in pieces.values())
     print(f"planned events              : {len(plan)}")
     print(f"pieces (rest + straight)    : {n_pieces}")
@@ -523,8 +640,10 @@ def main():
     print(f"piece pairs examined        : {n_pairs} "
           f"({n_time} needed a timing argument)")
     print(f"min pocket entry speed      : "
-          f"{mp.nstr(min(lo(p[3]) for p in potted), 6)} m/s (slowest stroke)")
-    print(f"all pocketed by time        : {mp.nstr(t_end, 8)} s")
+          f"{dn(min(lo(p[3]) for p in potted), 6)} m/s (slowest stroke; "
+          f"a lower bound, rounded down)")
+    print(f"all pocketed by time        : {up(t_end, 8)} s (an upper bound, rounded up)")
+    print(f"cue ball after its last planned event: {tail_report([tail])}")
     print(f"wall time                   : {time.time() - t0:.1f} s")
     print("\nCERTIFIED: every stroke in the strip pockets all "
           f"{len(potted)} object balls.")

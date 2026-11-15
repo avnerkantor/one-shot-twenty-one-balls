@@ -61,7 +61,8 @@ class TM:
     # ----------------------------------------------------- piece set-up
     @classmethod
     def set_piece(cls, h):
-        h = mp.mpf(h)
+        if not isinstance(h, mp.mpf):       # an mpf is kept as it is:
+            h = mp.mpf(h)                   # mp.mpf(h) would round it
         cls.H = h
         cls.T = iv.mpf([-h, h])
         hk = iv.mpf(h)

@@ -35,7 +35,10 @@ separates) reuse certify_strip.py on the ranges of the centred forms.
 
 An adaptive bisection covers the window: a piece that cannot be decided
 is split, down to a minimum width. The output lists every certified
-piece; the pieces are contiguous and cover the window exactly.
+piece by its offsets from phi*. The pieces of offsets are contiguous.
+The domain of directions on which a piece is certified is computed in
+interval arithmetic and rounded outward (piece_domain), so it contains
+phi* plus the piece, and the certified domains cover the window.
 
 Run:  CERT_PREC=400 python certify_window.py [DMINUS DPLUS [DV]]
       CERT_PREC=400 python certify_window.py DMINUS DPLUS VA VB
@@ -271,6 +274,7 @@ def build(w, V, phic, h, plan_t):
     speeds V (interval). plan_t carries the designated cushions and
     pockets. Returns what certify_strip.build returns, with geometry as
     centred forms."""
+    S.check_precision()
     CF.set_piece(h)
     n = len(w["balls"])
     names = ["cue"] + [f"b{i}" for i in range(n)]
@@ -347,6 +351,7 @@ def build(w, V, phic, h, plan_t):
     t_end = max(hi(p[2]) for p in potted)
     # extend the cue (the only ball left) until every stroke has finished
     pc = cur["cue"]
+    wall_times, stop_time = [], None
     while True:
         stop_s = pc.v0 * pc.v0 / (2 * A)
         best = None
@@ -359,6 +364,7 @@ def build(w, V, phic, h, plan_t):
             check_single(pc, stop_s)
             pc.ell, pc.v1, pc.e1 = stop_s, Z, "x"
             pc.t1 = pc.t0 + pc.v0 / A
+            stop_time = pc.t1
             if lo(pc.t1) <= t_end:
                 P = (pc.P[0] + pc.u[0] * stop_s, pc.P[1] + pc.u[1] * stop_s)
                 pieces["cue"].append(Piece("cue", "rest", P, pc.t1, "x"))
@@ -369,8 +375,10 @@ def build(w, V, phic, h, plan_t):
         np_ = reflect(pc, wall, s, "x")
         if lo(pc.t1) > t_end:
             break
+        wall_times.append(pc.t1)
         pieces["cue"].append(np_)
         pc = np_
+    S.note_tail(potted, wall_times, stop_time)
     return pieces, same_start, designed, potted, t_end
 
 
@@ -401,8 +409,28 @@ def certify_piece(w, V, phic, h, plan_t):
 
 # ------------------------------------------------------------ driver
 def exact(x):
-    x = mp.mpf(x)
+    """An mpf is printed as it is; mp.mpf(x) would round it."""
+    if not isinstance(x, mp.mpf):
+        x = mp.mpf(x)
     return f"{'-' if x < 0 else ''}{x.man}*2^{x.exp}" if x.man else "0"
+
+
+def piece_domain(PHISTAR, a, b):
+    """Centre phic and half-width h (both mpf) of a domain of directions
+    [phic - h, phic + h] that contains phi* + [a, b]. PHISTAR is the
+    interval enclosing phi*; a and b are mpf offsets. The two ends are
+    enclosed in interval arithmetic, the centre is a point between them,
+    and h is an upper bound of its distance to either end. (Forming
+    phi* + (a + b)/2 in point arithmetic would round the centre and
+    shift the domain off the piece.)"""
+    lo_end = PHISTAR + iv.mpf(a)
+    hi_end = PHISTAR + iv.mpf(b)
+    phic = lo((lo_end + hi_end) / 2)
+    c = iv.mpf(phic)
+    h = max(hi(c - lo_end), hi(hi_end - c))
+    if not h > 0:
+        raise Fail("empty piece of directions")
+    return phic, h
 
 
 VERBOSE = os.environ.get("CERT_VERBOSE") == "1"
@@ -412,22 +440,26 @@ def main():
     path = os.environ.get("CERT_WITNESS", os.path.join(S.HERE, "witness_21.json"))
     w = json.load(open(path))
     args = sys.argv[1:]
-    dminus = mp.mpf(args[0] if len(args) > 0 else "4.358e-44")
-    dplus = mp.mpf(args[1] if len(args) > 1 else "9.045e-43")
-    if len(args) > 3:                        # V0 in V0* + [VA, VB]
-        va, vb = mp.mpf(args[2]), mp.mpf(args[3])
+    # Decimal arguments are enclosed in intervals and rounded outward, so
+    # the certified window and speed range contain the decimal ones.
+    dminus = hi(iv.mpf(args[0] if len(args) > 0 else "4.358e-44"))
+    dplus = hi(iv.mpf(args[1] if len(args) > 1 else "9.045e-43"))
+    if len(args) > 3 and S.V_ABS:            # V0 in [VA, VB] m/s
+        V = iv.mpf([lo(iv.mpf(args[2])), hi(iv.mpf(args[3]))])
+        vlabel = f"V0 in [{args[2]}, {args[3]}] m/s"
+    elif len(args) > 3:                      # V0 in V0* + [VA, VB]
+        V = iv.mpf(w["v0"]) + iv.mpf([lo(iv.mpf(args[2])), hi(iv.mpf(args[3]))])
         vlabel = f"V0 in V0* + [{args[2]}, {args[3]}]"
     else:                                    # V0 in V0* +/- DV
-        dV = mp.mpf(args[2] if len(args) > 2 else "0.01")
-        va, vb = -dV, dV
+        dV = hi(iv.mpf(args[2] if len(args) > 2 else "0.01"))
+        V = iv.mpf(w["v0"]) + iv.mpf([-dV, dV])
         vlabel = f"V0 in V0* +/- {mp.nstr(dV, 6)}"
     min_width = mp.mpf(os.environ.get("CERT_MIN_WIDTH", "1e-91"))   # give up below this piece width
     S.check_admissible(w)
     import certify_miss as M
     plan = S.plan_events(w)                  # proposal only
     plan_t = M.targets(w, plan)              # designated cushions and pockets
-    phistar = mp.mpf(w["phi"])
-    V = iv.mpf(w["v0"]) + iv.mpf([va, vb])
+    PHISTAR = iv.mpf(w["phi"])
     print(f"window: phi* + [-{mp.nstr(dminus, 10)}, {mp.nstr(dplus, 10)}], "
           f"{vlabel}, {S.PREC} bits")
     print(f"  exact offsets: -{exact(dminus)}, +{exact(dplus)}")
@@ -436,11 +468,12 @@ def main():
     t0 = time.time()
     stack = [(-dminus, dplus)]
     done = []
+    tails = []
     n_try = 0
     min_pot = None
     while stack:
         a, b = stack.pop()
-        phic, h = phistar + (a + b) / 2, (b - a) / 2
+        phic, h = piece_domain(PHISTAR, a, b)
         n_try += 1
         t1 = time.time()
         try:
@@ -459,6 +492,7 @@ def main():
         v = min(lo(p[3]) for p in potted)
         min_pot = v if min_pot is None else min(min_pot, v)
         done.append((a, b, n_time))
+        tails.append(dict(S.TAIL))
         if VERBOSE:
             print(f"  piece [{mp.nstr(a, 8)}, {mp.nstr(b, 8)}] width {mp.nstr(b - a, 4)}: "
                   f"ok in {time.time() - t1:.1f} s ({n_time} timing pairs)", flush=True)
@@ -466,16 +500,21 @@ def main():
             print(f"  {len(done)} pieces certified, {len(stack)} pending, "
                   f"{time.time() - t0:.0f} s", flush=True)
     done.sort()
-    # the pieces are contiguous and cover the window exactly
+    # the pieces of offsets are contiguous and cover [-dminus, dplus];
+    # each was certified on a domain that contains it (piece_domain)
     assert done[0][0] == -dminus and done[-1][1] == dplus
     assert all(done[i][1] == done[i + 1][0] for i in range(len(done) - 1))
+    S.check_precision()
     widths = [b - a for a, b, _ in done]
     print(f"\npieces certified            : {len(done)} (of {n_try} tried)")
     print(f"piece widths                : {mp.nstr(min(widths), 4)} to "
           f"{mp.nstr(max(widths), 4)}")
-    print(f"min pocket entry speed      : {mp.nstr(min_pot, 6)} m/s")
+    print(f"min pocket entry speed      : {S.dn(min_pot, 6)} m/s "
+          f"(a lower bound, rounded down)")
+    print(f"cue ball after its last planned event: {S.tail_report(tails)}")
     print(f"wall time                   : {time.time() - t0:.1f} s")
-    print("\npieces (offsets from phi*, exact):")
+    print("\npieces (offsets from phi*, exact; each is certified on a domain "
+          "of directions that contains phi* plus the piece):")
     for a, b, nt in done:
         print(f"  [{exact(a)}, {exact(b)}]  timing pairs {nt}")
     print(f"\nCERTIFIED: every stroke with direction in phi* + "

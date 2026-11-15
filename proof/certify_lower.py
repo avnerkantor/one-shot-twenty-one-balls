@@ -46,29 +46,34 @@ lo, hi = S.lo, S.hi
 
 def critical(pieces):
     """(lo, hi) of max_j beta_end/alpha over the designated moving pieces,
-    with the name of the piece attaining the upper bound."""
-    best_lo, best_hi, who = None, None, None
+    the name of the piece attaining the upper bound, and the largest
+    upper bound among the other pieces. If that is below the lower bound
+    of the named piece, the named piece attains the maximum for every
+    direction of the domain."""
+    cands = []
     for ps in pieces.values():
         for pc in ps:
             if pc.kind != "move" or pc.al is None or not isinstance(pc.e1, int):
                 continue                    # rest pieces, cue after its last event
             r = (pc.be1 / pc.al).range()
-            if best_lo is None or lo(r) > best_lo:
-                best_lo = lo(r)
-            if best_hi is None or hi(r) > best_hi:
-                best_hi, who = hi(r), (pc.ball, pc.e0, pc.e1)
-    return best_lo, best_hi, who
+            cands.append((hi(r), lo(r), (pc.ball, pc.e0, pc.e1)))
+    cands.sort(key=lambda c: c[0])
+    top_hi, top_lo, who = cands[-1]
+    runner_hi = cands[-2][0]
+    best_lo = max(c[1] for c in cands)
+    return best_lo, top_hi, who, top_lo, runner_hi
 
 
 def main():
     w = json.load(open(os.environ.get("CERT_WITNESS", os.path.join(S.HERE, "witness_21.json"))))
     args = sys.argv[1:]
-    dminus = mp.mpf(args[0] if len(args) > 0 else "4.3586e-44")
-    dplus = mp.mpf(args[1] if len(args) > 1 else "9.0454e-43")
+    # decimal arguments, enclosed and rounded outward
+    dminus = hi(iv.mpf(args[0] if len(args) > 0 else "4.3586e-44"))
+    dplus = hi(iv.mpf(args[1] if len(args) > 1 else "9.0454e-43"))
     S.check_admissible(w)
     plan = S.plan_events(w)                  # proposal only
     plan_t = M.targets(w, plan)              # designated cushions and pockets
-    phistar = mp.mpf(w["phi"])
+    PHISTAR = iv.mpf(w["phi"])
     V = iv.mpf(w["v0"])                      # any speed at which no ball stops
     print(f"lower speed limit over phi* + [-{mp.nstr(dminus, 10)}, "
           f"{mp.nstr(dplus, 10)}], {S.PREC} bits")
@@ -77,7 +82,7 @@ def main():
     stack, done = [(-dminus, dplus)], []
     while stack:
         a, b = stack.pop()
-        phic, h = phistar + (a + b) / 2, (b - a) / 2
+        phic, h = Wd.piece_domain(PHISTAR, a, b)
         try:
             pieces = Wd.build(w, V, phic, h, plan_t)[0]
         except S.Fail as exc:
@@ -91,16 +96,23 @@ def main():
     done.sort()
     assert done[0][0] == -dminus and done[-1][1] == dplus
     assert all(done[i][1] == done[i + 1][0] for i in range(len(done) - 1))
+    S.check_precision()
     vc_lo = min(d[2] for d in done)
     vc_hi = max(d[3] for d in done)
     whos = {d[4] for d in done}
+    dominates = len(whos) == 1 and all(d[6] < d[5] for d in done)
     print(f"pieces of the window        : {len(done)}")
     print(f"critical piece              : {', '.join(f'{b} from event {e0} to event {e1}' for b, e0, e1 in sorted(whos))}")
-    print(f"V_c^2 (max beta_end/alpha)  : [{mp.nstr(mp.mpf(vc_lo), 20)}, {mp.nstr(mp.mpf(vc_hi), 20)}]")
+    print(f"it attains the maximum      : "
+          + (f"yes, for every direction of the window (its value is at least "
+             f"{S.dn(min(d[5] for d in done), 12)}, every other piece is at most "
+             f"{S.up(max(d[6] for d in done), 12)})" if dominates else "not decided"))
+    # every bound below is printed rounded outward
+    print(f"V_c^2 (max beta_end/alpha)  : [{S.dn(vc_lo, 20)}, {S.up(vc_hi, 20)}]")
     r = iv.sqrt(iv.mpf([vc_lo, vc_hi]))
-    print(f"V_c                         : [{mp.nstr(lo(r), 20)}, {mp.nstr(hi(r), 20)}] m/s")
-    print(f"V_c - V0*                   : [{mp.nstr(lo(r) - mp.mpf(w['v0']), 15)}, "
-          f"{mp.nstr(hi(r) - mp.mpf(w['v0']), 15)}] m/s")
+    print(f"V_c                         : [{S.dn(lo(r), 20)}, {S.up(hi(r), 20)}] m/s")
+    rel = r - iv.mpf(w["v0"])
+    print(f"V_c - V0*                   : [{S.dn(lo(rel), 15)}, {S.up(hi(rel), 15)}] m/s")
     print(f"wall time                   : {time.time() - t0:.1f} s")
     print("\nPROVED: for every direction phi in the window, a stroke (V0, phi) with "
           "V0 <= V_c(phi) does not realise the event list: the critical ball "

@@ -1,5 +1,5 @@
 witness_certify_arb.py  model M, Arb ball arithmetic, prec=1200 bits
-data: witness_21_exact.json   v0=11.9  phi=-0.03491508260754981  r=0 (radius used: 0)
+data: proof/witness_21.json   v0=11.9  phi=-0.03491508260754981  r=0 (radius used: 0)
 events: idx kind names  t>=elapsed-time-lower-bound  speeds (lower bounds)
   1  bb     cue b0       t>=9.450000000e-2  vn>=1.419151462
   2  bb     cue b1       t>=1.095000000e-1  vn>=1.554616294
@@ -70,5 +70,5 @@ summary: 61 events (bb 21, wall 19, pocket 21, stop 0)
   min pocket entry speed |v|        >= 4.436740942e-1
   final time enclosure  [5.790217664, +2.705e-278]
   final state enclosure max radius   4.417e-279 ; max event-time radius 2.305e-278
-  wall time 0.1 s
+  wall time 0.2 s
 CERTIFIED

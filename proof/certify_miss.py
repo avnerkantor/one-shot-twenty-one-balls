@@ -59,8 +59,10 @@ class Miss(Exception):
 
 
 def exact(x):
-    """Exact description of an mpf: mantissa * 2^exponent."""
-    x = mp.mpf(x)
+    """Exact description of an mpf: mantissa * 2^exponent. An mpf is
+    printed as it is; mp.mpf(x) would round it to the working precision."""
+    if not isinstance(x, mp.mpf):
+        x = mp.mpf(x)
     return f"{'-' if x < 0 else ''}{x.man}*2^{x.exp}" if x.man else "0"
 
 
@@ -88,14 +90,14 @@ def ray_misses(P, u, Q, rad):
         raise Fail("start inside a contact disk")
     if pos(b):
         return (f"moving away from the target (start distance >= "
-                f"{mp.nstr(lo(iv.sqrt(c + rad * rad)), 8)} m, radius "
-                f"{mp.nstr(hi(rad), 6)} m)")
+                f"{S.dn(lo(iv.sqrt(c + rad * rad)), 8)} m, radius "
+                f"{S.up(hi(rad), 6)} m)")
     disc = b * b - c
     if (disc < 0) is True:
         dist = iv.sqrt(d[0] ** 2 + d[1] ** 2 - b * b)
         return (f"the line of motion passes the target at distance >= "
-                f"{mp.nstr(lo(dist), 12)} m > radius {mp.nstr(hi(rad), 6)} m "
-                f"(margin >= {mp.nstr(lo(dist - rad), 6)} m)")
+                f"{S.dn(lo(dist), 12)} m > radius {S.up(hi(rad), 6)} m "
+                f"(margin >= {S.dn(lo(dist - rad), 6)} m)")
     return None
 
 
@@ -111,9 +113,12 @@ def decide(ball, ev_i, label, s_target, competitors):
         if d is None:
             continue
         if pos(iv.mpf(lo(s_target)) - d):
+            n = 10      # print enough digits for the two bounds to differ
+            while n < 100 and S.Fraction(S.up(hi(d), n)) >= S.Fraction(S.dn(lo(s_target), n)):
+                n += 5
             raise Miss(f"event {ev_i}: {ball} reaches {name} after arc "
-                       f"length <= {mp.nstr(hi(d), 10)} m, before {label} "
-                       f"(arc length >= {mp.nstr(lo(s_target), 10)} m)")
+                       f"length <= {S.up(hi(d), n)} m, before {label} "
+                       f"(arc length >= {S.dn(lo(s_target), n)} m)")
         if not pos(d - s_target):
             raise Fail(f"event {ev_i}: {ball}: {name} vs {label} undecided")
 
@@ -127,6 +132,7 @@ def geometry(w, PHI, plan, record=None):
     only; timing between different balls is not examined here). Raises
     Miss with a proof that some designated event cannot happen, or Fail
     if the box is too wide to decide."""
+    S.check_precision()
     n = len(w["balls"])
     names = ["cue"] + [f"b{i}" for i in range(n)]
     P = {nm: (iv.mpf(p[0]), iv.mpf(p[1]))
@@ -228,8 +234,10 @@ def geometry(w, PHI, plan, record=None):
 
 # ----------------------------------------------------------- drivers
 def status(w, plan_t, delta):
-    """'OK', 'MISS' or 'UNDECIDED' for the exact direction phi* + delta."""
-    PHI = iv.mpf(mp.mpf(w["phi"]) + delta)
+    """'OK', 'MISS' or 'UNDECIDED' for the exact direction phi* + delta
+    (delta an mpf). The sum is formed in interval arithmetic, so PHI is
+    an enclosure of that direction, not a rounded copy of it."""
+    PHI = iv.mpf(w["phi"]) + iv.mpf(delta)
     try:
         geometry(w, PHI, plan_t)
         return "OK", ""
@@ -281,13 +289,15 @@ def scan(w, plan_t):
 
 
 def certify_miss(w, plan_t, delta, hw):
-    d, h = mp.mpf(delta), mp.mpf(hw)
-    centre = mp.mpf(w["phi"]) + d
-    PHI = iv.mpf([centre - h, centre + h])
-    print(f"direction box: phi* + {mp.nstr(d, 25)} +/- {mp.nstr(h, 6)}")
-    print(f"  exact centre offset {exact(d)}, half-width {exact(h)}")
-    print(f"  decimal enclosure of the offset: "
-          f"[{mp.nstr(lo(iv.mpf(d) - h), 25)}, {mp.nstr(hi(iv.mpf(d) + h), 25)}]")
+    # DELTA and HW are decimal strings. They are enclosed in intervals
+    # and every sum is rounded outward, so the box of directions PHI
+    # contains phi* + DELTA +/- HW.
+    h = hi(iv.mpf(hw))
+    OFF = iv.mpf(delta) + iv.mpf([-h, h])
+    PHI = iv.mpf(w["phi"]) + OFF
+    print(f"direction box: phi* + {delta} +/- {hw}")
+    print(f"  the box contains every offset in [{exact(lo(OFF))}, {exact(hi(OFF))}]")
+    print(f"  width of the box of directions: {mp.nstr(hi(PHI) - lo(PHI), 6)} rad")
     print(f"  precision {S.PREC} bits")
     try:
         geometry(w, PHI, plan_t)
@@ -304,11 +314,13 @@ def certify_miss(w, plan_t, delta, hw):
 
 
 def certify_point(w, plan, plan_t, delta, dV):
-    d, dv = mp.mpf(delta), mp.mpf(dV)
-    centre = mp.mpf(w["phi"]) + d
-    PHI = iv.mpf(centre)
+    # enclosures of the decimal strings, rounded outward
+    OFF = iv.mpf(delta)
+    dv = hi(iv.mpf(dV))
+    PHI = iv.mpf(w["phi"]) + OFF
     V = iv.mpf(w["v0"]) + iv.mpf([-dv, dv])
-    print(f"direction: phi* + {mp.nstr(d, 25)} exactly ({exact(d)}), "
+    print(f"direction: phi* + {delta} (enclosed: every offset in "
+          f"[{exact(lo(OFF))}, {exact(hi(OFF))}]), "
           f"V0 in V0* +/- {dV}, {S.PREC} bits")
     try:
         geometry(w, PHI, plan_t)          # designated targets are met
@@ -322,7 +334,7 @@ def certify_point(w, plan, plan_t, delta, dV):
     print(f"  pockets as designated       : {same}")
     print(f"  piece pairs examined        : {n_pairs} ({n_time} needed timing)")
     print(f"  min pocket entry speed      : "
-          f"{mp.nstr(min(lo(p[3]) for p in potted), 6)} m/s")
+          f"{S.dn(min(lo(p[3]) for p in potted), 6)} m/s (a lower bound, rounded down)")
     print("\nCERTIFIED: every stroke with this direction and a speed in the "
           f"range follows the event list and pockets all {len(potted)} balls.")
     return 0
@@ -349,6 +361,7 @@ def main():
     else:
         print(__doc__)
         return 2
+    S.check_precision()
     print(f"wall time: {time.time() - t0:.1f} s")
     return rc
 

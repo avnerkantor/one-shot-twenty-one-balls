@@ -1,4 +1,4 @@
-certifying witness_21_exact.json: V0 +/- 1e-90, phi +/- 1e-90, 1200-bit interval arithmetic
+certifying proof/witness_21.json: V0 +/- 1e-90, phi +/- 1e-90, 1200-bit interval arithmetic
   1  t in [0.0945, +1.7e-89]  bb     cue / b0        normal speed >= 1.419
   2  t in [0.1095, +4.1e-87]  bb     cue / b1        normal speed >= 1.555
   3  t in [0.246, +1.9e-83]  bb     cue / b2        normal speed >= 1.574
@@ -70,6 +70,6 @@ min_cushion_normal_speed    : 0.106479
 min_pocket_entry_speed      : 0.443674
 final_enclosure_width       : 9.56e-6
 final_time                  : 5.790217665
-wall time                   : 87.0 s
+wall time                   : 85.4 s
 
 CERTIFIED: every shot in the box pockets all 21 object balls.

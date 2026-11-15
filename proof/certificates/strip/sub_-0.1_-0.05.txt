@@ -3,8 +3,9 @@ planned events              : 61
 pieces (rest + straight)    : 83
 collisions (moving onto rest): 21
 piece pairs examined        : 2603 (40 needed a timing argument)
-min pocket entry speed      : 0.438949 m/s (slowest stroke)
-all pocketed by time        : 5.8564926 s
-wall time                   : 9.3 s
+min pocket entry speed      : 0.438948 m/s (slowest stroke; a lower bound, rounded down)
+all pocketed by time        : 5.8564926 s (an upper bound, rounded up)
+cue ball after its last planned event: cushion contacts that may precede the last pocketing: 0; it comes to rest after the last pocketing, for every stroke
+wall time                   : 7.2 s
 
 CERTIFIED: every stroke in the strip pockets all 21 object balls.
