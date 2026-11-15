@@ -8,9 +8,10 @@ abstract: >-
   interval arithmetic that every stroke in a box around it does too, so
   the set of successful strokes has positive Lebesgue measure. The
   successful strokes form a ribbon: every speed from 9.3214 to 12 m/s
-  works, while the window of directions is 9.4813e-43 radians wide, both
-  figures certified. The lower edge in speed is located exactly, where the
-  slowest ball comes to rest at the lip of its pocket. The strokes with a
+  works, while the window of directions is 9.481e-43 radians wide, both
+  figures certified. The lower edge in speed is located to within a
+  millimetre per second, where the slowest ball comes to rest at the lip
+  of its pocket. The strokes with a
   given list of events form a semialgebraic set. For the regulation
   opening position we state the corresponding conjecture, and show that a
   finite certified search would settle it positively. The repository also

@@ -1,0 +1,10 @@
+test_taylor_models.py  degrees 1, 2, 4, 6; half-widths 1e-30 to 0.05; 400 and 1200 bits
+models built                 : 3120 (remainder without zero: 0)
+programs skipped             : 0 (an enclosure was too wide for 1/x or sqrt)
+point checks                 : 28080
+  true value inside the model: 28080
+  disjoint from the model    : 0
+  overlapping, not inside    : 0
+zero ranges refused          : 4 of 4
+wall time                    : 151.1 s
+ALL CONTAINMENT TESTS PASSED

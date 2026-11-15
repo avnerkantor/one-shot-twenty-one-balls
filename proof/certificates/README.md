@@ -267,3 +267,17 @@ pieces from 5.9e-5 down to 3.7e-6 rad wide the same check fails to
 separate the cue ball from ball b11, which it passes on the way to
 b10. This is why the rectangle is certified as ten intervals. Nothing
 is claimed about the window's edges or about speeds below V0_c - 0.01.
+
+## Cross-check in Arb, and tests of the Taylor models
+
+The certificates of the ribbon, the window, the lower edge and the
+cluster come from one family of programs, all built on mpmath. Two
+further files check them from outside. Neither is part of a proof.
+
+| file | what it shows |
+|---|---|
+| `crosscheck_arb.txt` | output of `proof/crosscheck_arb.py`: the Arb certifier `certify_arb.py`, which shares no code with the mpmath certifiers, run at 52 single strokes. At 30 strokes of the chain's certified rectangle (its corners, both ends of the strips of Theorems B and D(iii), and a grid between them) and at 12 strokes of the cluster's rectangle (its corners and a grid) it certifies that the stroke realises the event list. At the two directions of Theorem C(ii), at three speeds each, it certifies that ball 21 (`b20`) meets a cushion before its pocket. At four strokes below the critical speed it certifies that ball 19 (`b18`) stops before its pocket. All 52 strokes behave as the theorems state |
+| `test_taylor_models.txt` | output of `proof/test_taylor_models.py`: 3120 Taylor models of degrees 1, 2, 4 and 6 on pieces of half-width 1e-30 to 0.05, built from random expressions in the operations that `certify_window.py` uses, compared at nine points of each piece with a 1200-bit interval evaluation of the same expression. In all 28080 comparisons the true value lies inside the model. Every remainder contains zero, and 1/x and sqrt(x) refuse a model whose range contains zero. The same test fails, as it should, when the Lagrange remainder of 1/x and sqrt(x) is removed from the code |
+
+The cross-check also shows the cue ball coming to rest before the last
+pocketing at the slower strokes, as the certificates above report.

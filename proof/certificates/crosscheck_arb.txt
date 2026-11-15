@@ -1,0 +1,62 @@
+crosscheck_arb.py  model M, Arb ball arithmetic, prec=1200 bits, single strokes
+
+chain witness (proof/witness_21.json)
+  event list at the stored stroke: 61 events (bb 21, wall 19, pocket 21); all 21 pocketed
+  V0 = 9.321315       phi = phi* -4.35860e-44 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 9.321315       phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 9.321315       phi = phi* +9.04540e-43 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 9.4            phi = phi* -4.35860e-44 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 9.4            phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 9.4            phi = phi* +9.04540e-43 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = V0* -2.3       phi = phi* -4.35860e-44 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = V0* -2.3       phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = V0* -2.3       phi = phi* +9.04540e-43 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 10             phi = phi* -4.35860e-44 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 10             phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 10             phi = phi* +9.04540e-43 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 10.5           phi = phi* -4.35860e-44 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 10.5           phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 10.5           phi = phi* +9.04540e-43 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 11             phi = phi* -4.35860e-44 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 11             phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 11             phi = phi* +9.04540e-43 : realizes  Theorems C(i), D(ii)
+  V0 = 11.5           phi = phi* -4.35860e-44 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 11.5           phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorems C(i), D(ii)
+  V0 = 11.5           phi = phi* +9.04540e-43 : realizes  Theorems C(i), D(ii)
+  V0 = 12             phi = phi* -4.35860e-44 : realizes  Theorems C(i), D(ii)
+  V0 = 12             phi = phi* +0.00000e+00 : realizes  Theorems C(i), D(ii)
+  V0 = 12             phi = phi* +9.04540e-43 : realizes  Theorems C(i), D(ii)
+  V0 = V0* -2.3       phi = phi* -1.00000e-90 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorem B
+  V0 = 9.3212701695   phi = phi* -1.00000e-90 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorem D(iii)
+  V0 = V0* -2.3       phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorem B
+  V0 = 9.3212701695   phi = phi* +0.00000e+00 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorem D(iii)
+  V0 = V0* -2.3       phi = phi* +1.00000e-90 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorem B
+  V0 = 9.3212701695   phi = phi* +1.00000e-90 : realizes  (cue ball: 1 later event(s) before the last pocketing) Theorem D(iii)
+  V0 = 9.321315       phi = phi* +9.04550e-43 : deviates  (b20: wall right in place of pocket C-br) Theorem C(ii)
+  V0 = 9.321315       phi = phi* -4.35870e-44 : deviates  (b20: wall bottom in place of pocket C-br) Theorem C(ii)
+  V0 = 10.5           phi = phi* +9.04550e-43 : deviates  (b20: wall right in place of pocket C-br) Theorem C(ii)
+  V0 = 10.5           phi = phi* -4.35870e-44 : deviates  (b20: wall bottom in place of pocket C-br) Theorem C(ii)
+  V0 = 12             phi = phi* +9.04550e-43 : deviates  (b20: wall right in place of pocket C-br) Theorem C(ii)
+  V0 = 12             phi = phi* -4.35870e-44 : deviates  (b20: wall bottom in place of pocket C-br) Theorem C(ii)
+  V0 = 9.32035        phi = phi* -4.35860e-44 : deviates  (b18: stop in place of pocket C-bl) Theorem D(i), below every V_c
+  V0 = 9.32035        phi = phi* +0.00000e+00 : deviates  (b18: stop in place of pocket C-bl) Theorem D(i), below every V_c
+  V0 = 9.32035        phi = phi* +9.04540e-43 : deviates  (b18: stop in place of pocket C-bl) Theorem D(i), below every V_c
+  V0 = 9.32127016     phi = phi* +0.00000e+00 : deviates  (b18: stop in place of pocket C-bl) Theorem D(i), below V_c(phi*)
+
+cluster (construction/cluster_21.json)
+  event list at the stored stroke: 57 events (bb 21, wall 15, pocket 21); all 21 pocketed
+  V0 = V0* -0.01      phi = phi* -2.50000e-05 : realizes  Theorem E
+  V0 = V0* -0.01      phi = phi* +0.00000e+00 : realizes  Theorem E
+  V0 = V0* -0.01      phi = phi* +4.45000e-04 : realizes  Theorem E
+  V0 = V0* -0.01      phi = phi* +9.15000e-04 : realizes  Theorem E
+  V0 = V0* -0.005     phi = phi* -2.50000e-05 : realizes  Theorem E
+  V0 = V0* -0.005     phi = phi* +0.00000e+00 : realizes  Theorem E
+  V0 = V0* -0.005     phi = phi* +4.45000e-04 : realizes  Theorem E
+  V0 = V0* -0.005     phi = phi* +9.15000e-04 : realizes  Theorem E
+  V0 = V0* 0          phi = phi* -2.50000e-05 : realizes  Theorem E
+  V0 = V0* 0          phi = phi* +0.00000e+00 : realizes  Theorem E
+  V0 = V0* 0          phi = phi* +4.45000e-04 : realizes  Theorem E
+  V0 = V0* 0          phi = phi* +9.15000e-04 : realizes  Theorem E
+
+wall time 46.3 s
+CROSS-CHECK PASSED: every stroke behaves as the theorems state.

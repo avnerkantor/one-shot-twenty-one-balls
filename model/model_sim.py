@@ -322,11 +322,11 @@ def opening_rack(eps=5e-4, cue_pos=(0.65, W / 2.0)):
     balls = [Ball(cue_pos[0], cue_pos[1], "cue")]
     spots = {"yellow": (0.737, W / 2 - 0.292), "green": (0.737, W / 2 + 0.292),
              "brown": (0.737, W / 2), "blue": (L / 2, W / 2),
-             "pink": (2.667, W / 2), "black": (L - 0.324, W / 2)}
+             "pink": (3 * L / 4, W / 2), "black": (L - 0.324, W / 2)}
     for name, (x, y) in spots.items():
         balls.append(Ball(x, y, name))
     pitch = 2 * R + eps
-    apex_x = 2.667 + 2 * R + eps
+    apex_x = 3 * L / 4 + 2 * R + eps
     k = 0
     for row in range(5):
         x = apex_x + row * pitch * math.sqrt(3) / 2

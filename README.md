@@ -32,7 +32,7 @@ has positive measure.
 shot range) and direction within `1e-90` rad of `phi*` also pots all 21.
 Almost any strength works, but the aim has to be right to 90 decimal
 places. (The true window of directions is certified below: it is
-`9.4813e-43` rad wide.) This follows from a geometric fact about this
+`9.481e-43` rad wide.) This follows from a geometric fact about this
 witness. Every collision
 is a moving ball striking a ball at rest, so every ball's path is the
 same polyline whatever the speed; only the timing changes.
@@ -42,9 +42,10 @@ two balls are ever within one diameter of each other at the same
 instant for any speed in the range.
 
 **The window of directions.** The strokes that realise the witness's
-event list (the same 61 events, each ball's events in the same order)
+event list (every object ball has exactly its events of the list, in order, and
+the cue ball has its own first)
 have directions in `phi* + [-4.3586e-44, 9.0454e-43]` rad, a window
-`9.4813e-43` rad wide to five significant figures, at every speed in
+`9.481e-43` rad wide to four significant figures, at every speed in
 the ribbon. [`proof/certify_window.py`](proof/certify_window.py)
 certifies the whole rectangle of speeds times directions using
 first-order centred forms in the direction, which the plain box method
@@ -55,25 +56,27 @@ ball 21 reaches a cushion line inside the pocket jaws before the pocket
 disk, at any speed.
 
 **The lower edge.** Along a fixed skeleton every squared speed is an
-affine function of `V0^2`, so the event list is lost exactly when the
+affine function of `V0^2`, so the event list is lost once the
 slowest ball comes to rest at the lip of its pocket, at a critical
 speed `V_c(phi)`. [`proof/certify_lower.py`](proof/certify_lower.py)
 encloses it: `V_c(phi*) = 9.32127016844677` m/s, and `V_c` lies in
-`[9.32036, 9.32131]` m/s across the window. The rectangle
+`[9.32035, 9.32132]` m/s across the window. The rectangle
 `[9.321315, 12]` m/s times the window is certified, and along `phi*`
 the ribbon is certified down to `9.3212701695` m/s, which is `1.05e-9`
 m/s above `V_c(phi*)`. The success set has Lebesgue measure at least
 `2.53e-42` (m/s times rad).
 [`analysis/first_order.py`](analysis/first_order.py) explains the size
 of the window by composing first-order transfer maps along the chain;
-the dominant factor per thin cut is `c*l/(2R cos(theta))`, between 17
+the dominant factor per thin cut is `c*l/(2R cos(theta))`, between 16.8
 and 240 in this witness, and the composed maps reproduce the exact
 sensitivity of `3.184e40` m/rad to four figures.
 
 The box theorem is a rigorous replay of the stroke in interval
 arithmetic, checked by two independent programs written against
-different interval libraries (the ribbon, window and lower-edge
-certificates are single implementations built on mpmath):
+different interval libraries (the ribbon, window, lower-edge and cluster
+certificates are single implementations built on mpmath;
+[`proof/crosscheck_arb.py`](proof/crosscheck_arb.py) checks their
+statements at 52 single strokes with the Arb certifier):
 
 | | library | file |
 |---|---|---|
@@ -127,6 +130,12 @@ CERT_PREC=1200 python proof/certify_lower.py 1e-90 1e-90
 
 # the first-order (ray-transfer) analysis of the sensitivity
 CERT_PREC=400 python analysis/first_order.py
+
+# cross-check of the ribbon, window, lower edge and cluster at 52 single
+# strokes with the Arb certifier (about a minute)
+python proof/crosscheck_arb.py
+# containment tests of the Taylor models (about three minutes)
+python proof/test_taylor_models.py
 ```
 
 Each run ends with `CERTIFIED` and exits with code 0, or prints
@@ -161,6 +170,8 @@ proof/          the rigorous part
   certify_miss.py     the certified misses just outside the window
   certify_lower.py    the lower edge of the ribbon in speed
   taylor_models.py    degree-N Taylor models for certify_window.py (CERT_TM_DEGREE)
+  test_taylor_models.py  containment tests of the Taylor models
+  crosscheck_arb.py   the theorems on the ribbon and the cluster, checked at single strokes in Arb
   certificates/       saved outputs (box_search/, strip/, window/, miss/, lower/, cluster/)
 analysis/       first_order.py: the ray-transfer analysis of the sensitivity
 construction/   how the witness was found
@@ -212,6 +223,11 @@ python simulation/mc_random_layouts.py 25000 1 run_1.json   # random layouts (se
 python figures/make_figures.py             # witness layout + P(k) figure
 python figures/make_gif.py                 # the animation above
 ```
+
+The stored results of the break were produced with the pink spot at
+`x = 2.667` m. Since 2026-11-15 `opening_rack` places it at the regulation
+`3L/4 = 2.677` m, so a new run starts with the pack one centimetre further
+up the table.
 
 **Are random layouts friendlier?** Not in the tail. Each trial places
 all 22 balls at random and plays a random stroke. In 200,000 trials,

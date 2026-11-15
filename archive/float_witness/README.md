@@ -16,9 +16,10 @@ Two things the double-precision engine does are not part of the model:
 
 Replayed in the exact dynamics, the layout behaves differently. Both
 `proof/certify_mpmath.py` (interval arithmetic) and `model/model_sim_mp.py`
-(80 digits, no nudge) show the same thing: the trajectory departs from
-the design at the 8th event, object ball b5 strikes b12 at the 12th
-event, and only 4 balls are pocketed. Setting `EPS_SEP = 0` in the
+(80 digits, no nudge) show the same thing: the trajectory follows
+the design for nine events, the next two occur in the opposite order,
+object ball b5 strikes b12 at the 12th event, and only 4 balls are
+pocketed. Setting `EPS_SEP = 0` in the
 double-precision engine already reproduces the divergence.
 
 The construction method itself was sound. Rerun in the 80-digit engine
