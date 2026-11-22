@@ -190,6 +190,7 @@ simulation/     how rare is rare: Monte Carlo experiments
   mc_random_layouts.py, random_layout_runs/
                       strokes from random layouts of the 22 balls
 figures/        scripts and images
+lean/           Lean 4 formalization of Model M and the elementary lemmas (does not verify the certificates)
 archive/        superseded approaches, kept for provenance
 ```
 
